@@ -5,6 +5,7 @@ import { ColumnFilters } from './components/ColumnFilters/ColumnFilters';
 import { ReturnColumnsSelector } from './components/ReturnColumnsSelector/ReturnColumnsSelector';
 import { GetReportButton } from './components/GetReportButton/GetReportButton';
 import { ResultTable } from './components/ResultTable/ResultTable';
+import { ThemeSelector } from './components/ThemeSelector/ThemeSelector';
 import { filterRows } from './utils/filterRows';
 import type { FilterState, ParsedCSV, ReportResult } from './types';
 import styles from './App.module.css';
@@ -60,10 +61,15 @@ export default function App() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Spreadsheet Value Finder</h1>
-        <p className={styles.subtitle}>
-          Upload a CSV, choose filter criteria, and instantly find matching rows.
-        </p>
+        <div className={styles.headerInner}>
+          <div className={styles.headerText}>
+            <h1 className={styles.title}>What the Sheet</h1>
+            <p className={styles.subtitle}>
+              Upload a CSV, choose filter criteria, and instantly find matching rows.
+            </p>
+          </div>
+          <ThemeSelector />
+        </div>
       </header>
 
       <main className={styles.main}>

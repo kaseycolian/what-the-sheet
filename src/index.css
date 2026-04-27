@@ -13,18 +13,111 @@ html {
 
 body {
   margin: 0;
-  color: #111827;
-  background-color: #f3f4f6;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
 }
 
-/* Ensure focus rings are never suppressed */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-/* react-select focus ring override */
-.rs__control--is-focused {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 2px #bfdbfe !important;
+/* ============================================================
+   NEON 90s theme — default
+   ============================================================ */
+:root {
+  --bg-page: #0a0015;
+  --bg-card: #120025;
+  --bg-header: #0d001a;
+  --bg-input: #1a0038;
+  --bg-table-header: #1a003a;
+  --bg-row-stripe: rgba(102, 0, 204, 0.12);
+  --bg-row-hover: rgba(255, 0, 255, 0.08);
+  --bg-zone: #160030;
+  --bg-zone-hover: rgba(0, 255, 255, 0.07);
+  --bg-zone-drag: rgba(255, 0, 255, 0.14);
+
+  --text-primary: #f0ecff;
+  --text-secondary: #c0b8d8;
+  --text-muted: #9988bb;
+  --text-placeholder: #6655aa;
+  --text-header: #ff66ff;
+  --text-header-sub: #cc99ff;
+  --text-on-primary: #0a0015;
+
+  --border-default: #4400aa;
+  --border-strong: #5500cc;
+  --border-zone: #5522aa;
+  --border-zone-hover: #00ffff;
+  --border-zone-drag: #ff00ff;
+
+  --color-primary: #ff00ff;
+  --color-primary-hover: #cc00cc;
+  --color-primary-disabled: #2d1045;
+  --color-primary-disabled-text: #6644aa;
+
+  --focus-ring: #00ffff;
+  --focus-ring-shadow: rgba(0, 255, 255, 0.35);
+  --focus-ring-button: rgba(0, 255, 255, 0.45);
+
+  --color-matched: #39ff14;
+  --color-unmatched: #ff1493;
+  --color-error: #ff1493;
+
+  --shadow-card: 0 0 24px rgba(255, 0, 255, 0.12), 0 0 6px rgba(255, 0, 255, 0.07);
+
+  --glow-primary: 0 0 10px rgba(255, 0, 255, 0.5);
+  --glow-matched: 0 0 10px rgba(57, 255, 20, 0.55);
+  --glow-unmatched: 0 0 10px rgba(255, 20, 147, 0.55);
+  --text-glow-header: 0 0 14px rgba(255, 0, 255, 0.7), 0 0 32px rgba(255, 0, 255, 0.3);
+}
+
+/* ============================================================
+   Classic (light) theme
+   ============================================================ */
+[data-theme='classic'] {
+  --bg-page: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-header: #1e3a5f;
+  --bg-input: #f9fafb;
+  --bg-table-header: #f3f4f6;
+  --bg-row-stripe: #f9fafb;
+  --bg-row-hover: #f0f9ff;
+  --bg-zone: #f9fafb;
+  --bg-zone-hover: #eff6ff;
+  --bg-zone-drag: #dbeafe;
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-placeholder: #9ca3af;
+  --text-header: #ffffff;
+  --text-header-sub: #bfdbfe;
+  --text-on-primary: #ffffff;
+
+  --border-default: #e5e7eb;
+  --border-strong: #d1d5db;
+  --border-zone: #9ca3af;
+  --border-zone-hover: #3b82f6;
+  --border-zone-drag: #2563eb;
+
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-disabled: #9ca3af;
+  --color-primary-disabled-text: #ffffff;
+
+  --focus-ring: #2563eb;
+  --focus-ring-shadow: #bfdbfe;
+  --focus-ring-button: #93c5fd;
+
+  --color-matched: #15803d;
+  --color-unmatched: #b91c1c;
+  --color-error: #dc2626;
+
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06);
+
+  --glow-primary: none;
+  --glow-matched: none;
+  --glow-unmatched: none;
+  --text-glow-header: none;
 }

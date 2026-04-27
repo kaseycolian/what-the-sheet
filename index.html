@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spreadsheet Value Finder</title>
+    <title>What the Sheet</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem('wts-theme') || 'neon';
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

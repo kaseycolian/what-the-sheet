@@ -1,6 +1,7 @@
 import Select from 'react-select';
 import type { MultiValue } from 'react-select';
 import type { SelectOption } from '../../types';
+import { useReactSelectStyles } from '../../hooks/useReactSelectStyles';
 import styles from './ReturnColumnsSelector.module.css';
 
 type Props = {
@@ -14,6 +15,7 @@ export function ReturnColumnsSelector({
   selectedReturnColumns,
   onChange,
 }: Props) {
+  const selectStyles = useReactSelectStyles();
   const options: SelectOption[] = headers.map((h) => ({ label: h, value: h }));
   const value = options.filter((o) => selectedReturnColumns.includes(o.value));
 
@@ -35,6 +37,7 @@ export function ReturnColumnsSelector({
         placeholder="Select columns to display…"
         aria-label="Select columns to display in results"
         classNamePrefix="rs"
+        styles={selectStyles}
       />
     </div>
   );

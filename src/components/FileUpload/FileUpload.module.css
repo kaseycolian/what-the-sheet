@@ -1,28 +1,28 @@
 .zone {
-  border: 2px dashed #9ca3af;
+  border: 2px dashed var(--border-zone);
   border-radius: 8px;
   padding: 2rem;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
-  background-color: #f9fafb;
+  background-color: var(--bg-zone);
 }
 
 .zone:hover,
 .zone:focus-within {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--border-zone-hover);
+  background-color: var(--bg-zone-hover);
 }
 
 .dragging {
-  border-color: #2563eb;
-  background-color: #dbeafe;
+  border-color: var(--border-zone-drag);
+  background-color: var(--bg-zone-drag);
 }
 
 .label {
   display: block;
   font-size: 1rem;
-  color: #374151;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -33,12 +33,12 @@
 }
 
 .input:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
 .error {
   margin-top: 0.5rem;
-  color: #dc2626;
+  color: var(--color-error);
   font-size: 0.875rem;
 }

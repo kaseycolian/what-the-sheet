@@ -5,25 +5,28 @@
   padding: 0.625rem 2rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
-  background-color: #2563eb;
+  color: var(--text-on-primary);
+  background-color: var(--color-primary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, box-shadow 0.15s;
   align-self: flex-start;
+  box-shadow: var(--glow-primary);
 }
 
 .button:hover:not(:disabled) {
-  background-color: #1d4ed8;
+  background-color: var(--color-primary-hover);
 }
 
 .button:focus-visible {
-  outline: 3px solid #93c5fd;
+  outline: 3px solid var(--focus-ring-button);
   outline-offset: 2px;
 }
 
 .button:disabled {
-  background-color: #9ca3af;
+  background-color: var(--color-primary-disabled);
+  color: var(--color-primary-disabled-text);
   cursor: not-allowed;
+  box-shadow: none;
 }

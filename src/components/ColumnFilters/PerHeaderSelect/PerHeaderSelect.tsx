@@ -1,6 +1,7 @@
 import Select from 'react-select';
 import type { MultiValue } from 'react-select';
 import type { SelectOption } from '../../../types';
+import { useReactSelectStyles } from '../../../hooks/useReactSelectStyles';
 import styles from './PerHeaderSelect.module.css';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function PerHeaderSelect({ header, options, selectedValues, onChange }: Props) {
+  const selectStyles = useReactSelectStyles();
   const inputId = `col-filter-${header.replace(/\s+/g, '-').toLowerCase()}`;
   const value = options.filter((o) => selectedValues.includes(o.value));
 
@@ -32,6 +34,7 @@ export function PerHeaderSelect({ header, options, selectedValues, onChange }: P
         placeholder={`Select values for ${header}…`}
         aria-label={`Filter values for column ${header}`}
         classNamePrefix="rs"
+        styles={selectStyles}
       />
     </div>
   );

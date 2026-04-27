@@ -1,12 +1,26 @@
 .page {
   min-height: 100dvh;
-  background-color: #f3f4f6;
+  background-color: var(--bg-page);
 }
 
 .header {
-  background-color: #1e3a5f;
-  color: #fff;
-  padding: 1.5rem 2rem;
+  background-color: var(--bg-header);
+  padding: 1.25rem 2rem;
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .title {
@@ -14,12 +28,14 @@
   font-size: 1.625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: var(--text-header);
+  text-shadow: var(--text-glow-header);
 }
 
 .subtitle {
-  margin: 0.25rem 0 0;
+  margin: 0;
   font-size: 0.9375rem;
-  color: #bfdbfe;
+  color: var(--text-header-sub);
 }
 
 .main {
@@ -32,10 +48,10 @@
 }
 
 .card {
-  background-color: #fff;
+  background-color: var(--bg-card);
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06);
+  box-shadow: var(--shadow-card);
 }
 
 .filterStack {
@@ -48,8 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background-color: #fff;
+  background-color: var(--bg-card);
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06);
+  box-shadow: var(--shadow-card);
 }
