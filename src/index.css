@@ -1,0 +1,30 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+/* Ensure focus rings are never suppressed */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* react-select focus ring override */
+.rs__control--is-focused {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px #bfdbfe !important;
+}

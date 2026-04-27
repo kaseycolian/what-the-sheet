@@ -1,0 +1,44 @@
+.zone {
+  border: 2px dashed #9ca3af;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+  background-color: #f9fafb;
+}
+
+.zone:hover,
+.zone:focus-within {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.dragging {
+  border-color: #2563eb;
+  background-color: #dbeafe;
+}
+
+.label {
+  display: block;
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.input {
+  margin-top: 0.75rem;
+  display: block;
+  margin-inline: auto;
+}
+
+.input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.error {
+  margin-top: 0.5rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
