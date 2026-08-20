@@ -1,0 +1,395 @@
+/* =============================================================================
+   The A11Y Way — site footer. Shared by a11y-way-pages/site/overview.html and a11y-way-pages/site/preview.html.
+
+   ONE source of truth, same deal as site-header.css: both pages link this file,
+   so the footer cannot drift between them. Load it AFTER components.css, and
+   after site-header.css (the brand mark's base rules live there; see .ftr-mark).
+
+   Two columns, always in this DOM order:
+
+       lede ........ who this is, why it exists, where the code is
+       index ....... the two A11Y Way products, cross-linked
+
+   NO BOXES. The header is a rail of type and one lit edge, not a tray of cards,
+   and the footer is drawn to the same brief so the two read as one frame around
+   the page. Structure comes from rules and space:
+
+       the 2px tube ... the page's bottom edge, mirroring the header's top one
+       a 1px rule ..... above each product, the same gesture one size down
+
+   Hovering a product lights its rule — the footer's own signature move, not a
+   generic surface lift. That is the whole decorative budget, deliberately.
+
+   NO NEW COLOR PAIRS. Link and heading text is --text, prose is --text-muted,
+   both already AA-validated against every surface by the theme build. Accents
+   appear only on rules, dots and glows, which need 3:1 rather than 4.5:1 — that
+   is deliberate, since an accent as small text is contrast-bound on the light
+   themes (see skill/references/adding-a-theme.md). Hover therefore changes the
+   rule, the glow and the underline, never the text color.
+
+   Progressive enhancement: every flourish here is decorative. color-mix() and
+   backdrop-filter are each preceded by a flat fallback, so an engine without them
+   renders a plain opaque footer with all content and contrast intact. No :has().
+   ============================================================================= */
+
+.site-footer, .site-footer * { box-sizing: border-box; }
+
+/* ---------------------------------------------------------------------------
+   The slab
+   --------------------------------------------------------------------------- */
+.site-footer {
+  position: relative;
+  margin-top: 44px;
+  /* Flat first, glass second: engines without color-mix() keep the opaque panel
+     and lose nothing but the grid showing through. */
+  background: var(--bg-panel);
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(10px) saturate(1.15);
+}
+
+/* The header's lit tube, mirrored. 270deg rather than 90deg so the ramp runs the
+   other way and the two edges read as a matched pair rather than a repeat.
+
+   On ::after, matching the header (.site-header::after), which leaves ::before
+   free on BOTH bars for effects.css's .fx-grid — it paints its backdrop there,
+   so a tube on ::before would silently win and the grid would never render. */
+.site-footer::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  pointer-events: none;
+  background: var(--accent-purple);
+  background: linear-gradient(270deg, var(--accent-pink), var(--accent-purple), var(--accent-blue));
+  box-shadow: 0 0 calc(10px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-purple) 45%, transparent);
+}
+
+/* Same rail geometry as .hdr-inner, so the footer's content lines up with the
+   header's at every width.
+
+   One column until 1080px, which is where site-header.css drops to two rows —
+   above it the header is a single rail and the footer is two columns; below,
+   both stack. That is also the width where the split stops paying for itself:
+   the lede takes 330px, so a narrower viewport leaves the index too little to
+   run two products across, and you get a tall index beside a short lede with
+   dead space under it. Stacked, the index keeps its two columns down to 620px. */
+.ftr-inner {
+  max-width: 1600px; margin: 0 auto;
+  /* Bottom is 4px heavier than top, at every width. The slab ends the page, so
+     an even split reads top-heavy — this is an optical choice, not a rounding
+     artifact, and it should survive any future retune of these numbers.
+     The horizontal clamp is the shared rail geometry and is NOT free to change:
+     it is what lines footer content up with header content. */
+  padding: 30px clamp(16px, 3vw, 32px) 34px;
+  display: grid; gap: 26px;
+}
+@media (min-width: 1080px) {
+  .ftr-inner {
+    grid-template-columns: minmax(240px, 330px) minmax(0, 1fr);
+    column-gap: clamp(44px, 6vw, 104px);
+    align-items: start;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Lede — identity, the promise, and the source. The masthead of the footer:
+   everything here is a statement, and only the last line is a link.
+   --------------------------------------------------------------------------- */
+.ftr-lede {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 15px;
+}
+/* Optical, not structural: the index's first line of type starts below its rule,
+   so the lockup has to drop by about as much for the two columns to read as
+   starting together. Only once there are two columns to align. */
+@media (min-width: 1080px) {
+  .ftr-lede { padding-top: 9px; }
+}
+
+/* The lede lies down between 620px and 1080px — see the Responsive section. */
+
+/* Deliberately NOT a link. The header's lockup already goes home; a second copy
+   would only add a tab stop that lands exactly where the first one does. */
+.ftr-brand {
+  display: flex; align-items: center; gap: 11px;
+  margin: 0;
+}
+
+/* Keeps the .brand-mark class so assets/brand-mark-theme.js re-colors it too —
+   that script paints every img.brand-mark on the page. Sized and lit here rather
+   than inherited, so this file stands on its own if only the footer is taken. */
+.ftr-mark {
+  width: 28px; height: 28px; flex: none;
+  filter: drop-shadow(0 0 calc(3px * var(--glow-strength))
+                      color-mix(in srgb, var(--accent-pink) 55%, transparent));
+}
+
+/* The header's wordmark, verbatim — same size, weight and tracking, so the two
+   lockups are the same object rather than two takes on it. */
+.ftr-wordmark {
+  font-size: 17px; font-weight: 800; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--text);
+}
+
+/* The loudest prose in the footer, and the only line here set in --text. It is
+   the reason the site exists, so it outranks the product descriptions instead of
+   being filed away in a meta bar. text-wrap:balance evens the two lines where it
+   is supported and is ignored where it is not. */
+.ftr-mission {
+  margin: 0; max-width: 32ch;
+  font-size: 14.5px; line-height: 1.5; color: var(--text);
+  text-wrap: balance;
+}
+
+/* Tertiary, so no button and no chip — just a labelled mark. min-height, not
+   padding alone: 32px clears the 24x24 minimum target (SC 2.5.8) even on one
+   line. The octocat lights on hover the way .brand-mark does, which is the one
+   place this file borrows the header's glow rather than its rules. */
+.ftr-src {
+  display: inline-flex; align-items: center; gap: 9px;
+  min-height: 32px; margin-top: 3px;
+  font-size: 12.5px; font-weight: 600; color: var(--text); text-decoration: none;
+}
+.ftr-src svg {
+  width: 15px; height: 15px; flex: none; fill: currentColor;
+  transition: filter var(--dur) ease;
+}
+.ftr-src:hover { text-decoration: underline; text-underline-offset: 4px; }
+.ftr-src:hover svg {
+  filter: drop-shadow(0 0 calc(5px * var(--glow-strength))
+                      color-mix(in srgb, var(--accent-purple) 75%, transparent));
+}
+.ftr-src:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+
+/* ---------------------------------------------------------------------------
+   Index — the two products. The <nav>'s aria-label carries the accessible name
+   and the lede beside it carries the visible one, so there is no third label
+   here: a caption over two items is furniture, not information.
+   --------------------------------------------------------------------------- */
+
+/* auto-fit + minmax collapses to one column on its own, so the stack on a phone
+   is not a breakpoint doing the work — it happens wherever the two stop fitting.
+   min(280px, 100%) is what keeps a 320px viewport from overflowing: below 280px
+   the track falls back to the container width instead of forcing a scrollbar. */
+.ftr-links {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 22px clamp(28px, 4vw, 56px);
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
+
+.ftr-link {
+  position: relative;
+  display: grid; gap: 7px; align-content: start;
+  height: 100%; padding: 15px 0 0;
+  color: inherit; text-decoration: none;
+}
+
+/* The tube again, one size down. A product is a heading with a rule over it —
+   the oldest index device there is — and the rule is the thing that reacts.
+
+   It fades out over the last third rather than stopping square. The track is
+   wider than the text it sits over, so a full-bleed rule would advertise the
+   empty half; a fade ends the line where the reading ends. It also gives the
+   lit state somewhere to go — the accent washes in from the left and falls off,
+   which is what a neon tube does.
+
+   Flat --border first: an engine without color-mix() drops the gradient line and
+   keeps a plain rule, losing the fade and nothing else. */
+.ftr-link::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--border);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--border-strong) 45%, var(--border)) 62%, transparent);
+  transition: background var(--dur) ease, box-shadow var(--dur) ease;
+}
+/* The product you are inside keeps its rule half-lit at rest. Ordered before the
+   hover rules on purpose: same specificity, so source order decides which wins
+   when you hover the current item. */
+.ftr-link[aria-current]::before {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--accent-blue) 45%, var(--border)) 62%, transparent);
+}
+/* Three signals at once, none of them color-alone: the rule lights, the rule
+   glows, and the name underlines. */
+.ftr-link:hover::before,
+.ftr-link:focus-visible::before {
+  background: linear-gradient(90deg, var(--accent-blue) 62%, transparent);
+  box-shadow: 0 0 calc(9px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-blue) 60%, transparent);
+}
+.ftr-link:hover .ftr-name { text-decoration: underline; text-underline-offset: 4px; }
+.ftr-link:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+
+/* The trailing mark sits next to the name, not out at the column edge: with only
+   two products there are no rows for a table-of-contents right margin to line up
+   with, and the mark belongs to the word rather than to the track. Wraps rather
+   than truncates, so on the narrowest phones it drops to its own line instead of
+   clipping the product name. */
+.ftr-name {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px;
+  font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3;
+}
+
+/* Marks a link that leaves the site. Decoration only — the destination is already
+   in the link text, so it is aria-hidden and adds nothing to announce. */
+.ftr-ext {
+  width: 11px; height: 11px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+  opacity: .6;
+  transition: transform var(--dur) ease, opacity var(--dur) ease;
+}
+.ftr-link:hover .ftr-ext {
+  opacity: 1;
+  transform: translate(calc(var(--motion) * 2px), calc(var(--motion) * -2px));
+}
+
+/* "You are here" — the current item in the set, as a lit dot and a micro label
+   rather than a chip: the header's .tc-lamps notation, reused because it says the
+   same thing. The words carry the meaning, so the dot is free to be decoration
+   and "current" is never left to color.
+
+   Only the current item is labelled. The other product is marked by .ftr-ext
+   alone, which is a deliberate asymmetry: the arrow says "elsewhere" without
+   spending a second line of type on it. */
+.ftr-here {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-muted); white-space: nowrap;
+}
+
+/* The warning that the arrow cannot give. The glyph reads as "new tab" only if
+   you can see it — it is aria-hidden decoration — so this suffix is what stops a
+   screen reader user getting a new window with no notice, which is the actual
+   SC 3.2.5 complaint. CLIPPED, not display:none, so the visible label stays two
+   words while the accessible name keeps the whole sentence.
+
+   No shared utility class in this repo: .tc-cap and .seg-tail in site-header.css
+   write the same six declarations inline. Kept identical to them on purpose. */
+.ftr-newtab {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.ftr-here::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%; flex: none;
+  background: var(--accent-blue);
+  box-shadow: 0 0 calc(5px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-blue) 65%, transparent);
+}
+
+/* Capped at a reading measure rather than at the column: at 1600px the index
+   track is wide enough to run these past 80 characters, which is well beyond the
+   point the eye reliably finds the next line. */
+.ftr-desc {
+  max-width: 52ch;
+  font-size: 12.5px; line-height: 1.55; color: var(--text-muted);
+}
+
+/* =============================================================================
+   Responsive. Both grids collapse on their own; these only tighten the rail, at
+   the same widths site-header.css uses so the two stay in step — except for the
+   lede band below, which is the one rule here that changes a shape.
+   ============================================================================= */
+
+/* Tablets and small laptops: the lede lies down across the full width.
+
+   Between 620px and 1080px the footer is a single column, and a lede that keeps
+   its column shape is three stacked rows down the left edge with most of the
+   rail empty beside them. The narrow measure causing that is inherited from the
+   two-column layout above 1080px, where it is doing real work; here it only
+   makes the footer tall. As a band the same three parts read left to right in
+   the same order and give back ~93px, which is the point — this is the furniture
+   at the bottom of a page, and on a laptop it should not push what a visitor
+   actually came for further off screen.
+
+   Only the lede lies down: the index below keeps its own auto-fit grid, so the
+   two products stay side by side and this is a change of proportion, not of
+   structure. It has to live down here rather than beside the other .ftr-lede
+   rules because it overrides .ftr-mission's measure cap at equal specificity —
+   source order is what decides it. */
+@media (min-width: 621px) and (max-width: 1079.98px) {
+  .ftr-lede {
+    flex-direction: row; align-items: center; width: 100%;
+    /* One value for the band's rhythm. It is the space on BOTH sides of the rule
+       below — the gap puts it before, the mission's padding puts it after — so
+       the rule sits centred in its own margin instead of being shoved against
+       the text it introduces. Inherits to .ftr-mission. */
+    --band-gap: clamp(20px, 2.6vw, 32px);
+    gap: var(--band-gap);
+  }
+  .ftr-brand { flex: none; }
+
+  /* The mission changes ROLE here, so it changes voice.
+
+     Above 1080px it is the lede's hero statement in a narrow column and earns
+     --text at 14.5px — the loudest prose in the footer, which is correct there.
+     In the band it is a descriptor on a rail beside a 13px wordmark and a 12.5px
+     link, and that same treatment made it the loudest thing in the whole footer,
+     floating mid-rail with nothing holding it. Demoted here and only here.
+
+     Mono because this system already HAS a descriptor voice and it is mono —
+     .tc-cap in the header's theme console, and the header's own .brand-tag. So
+     this is a borrow, not a new idea, and it puts maximum distance between the
+     mission and the wordmark without touching the wordmark.
+
+     NO NEW COLOR PAIR: --text-muted on this surface is already AA-validated by
+     the theme build, and .ftr-desc above runs it at this exact size. */
+  .ftr-mission {
+    flex: 1 1 auto; max-width: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px; line-height: 1.45; letter-spacing: .01em;
+    color: var(--text-muted);
+    /* balance evens the two lines of a paragraph, which is right in the column
+       and wrong on a rail: here the line should fill the width it was given. */
+    text-wrap: wrap;
+
+    /* The rule that anchors it. The footer's whole brief is "structure from
+       rules and space, no boxes", so a 1px divider is this file's own vocabulary
+       rather than an import.
+
+       align-self overrides the row's centring so this box spans the band's full
+       height (set by .ftr-src's 32px floor) and the rule reads as a divider
+       between two zones instead of a stub the height of one line of text; the
+       inner flex then re-centres the words inside that taller box.
+
+       A real border, not a painted pseudo-element: Windows High Contrast keeps
+       borders and replaces backgrounds, so this one needs no forced-colors
+       patch. The block at the foot of this file exists precisely because the
+       footer's OTHER rules are backgrounds. */
+    align-self: stretch;
+    display: flex; align-items: center;
+    border-left: 1px solid var(--border);
+    padding-left: var(--band-gap);
+  }
+
+  /* Its optical 3px nudge was centring it under the text above it; in a row that
+     only knocks the link off the band's centre line. */
+  .ftr-src { flex: none; margin-top: 0; }
+}
+
+@media (max-width: 620px) {
+  .site-footer { margin-top: 34px; }
+  .ftr-inner { padding: 24px 14px 28px; gap: 22px; }
+  .ftr-mission { font-size: 14px; max-width: none; }
+}
+
+@media (max-width: 400px) {
+  .ftr-name { font-size: 14px; }
+}
+
+/* =============================================================================
+   Windows High Contrast
+   ============================================================================= */
+
+/* Every rule in here is a painted background — the tube, the row rules, the
+   dot — and HCM replaces backgrounds with system colors, so all three would go
+   invisible and the index would lose its structure. Borders and outlines put the
+   boundaries back, drawn in CanvasText so they follow whichever contrast theme
+   is active. */
+@media (forced-colors: active) {
+  .site-footer { border-top: 1px solid CanvasText; }
+  .site-footer::after { display: none; }
+  .ftr-link::before { display: none; }
+  .ftr-link { border-top: 1px solid CanvasText; }
+  .ftr-here::before { outline: 1px solid CanvasText; outline-offset: -1px; }
+}

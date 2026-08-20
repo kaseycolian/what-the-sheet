@@ -1,105 +1,82 @@
 import type { StylesConfig } from 'react-select';
 import type { SelectOption } from '../types';
-import { useTheme } from '../contexts/ThemeContext';
 
-const neonStyles: StylesConfig<SelectOption, true> = {
+/* react-select is styled with inline style objects, so it can't use the
+   components.css classes directly — instead it reads the same theme-service tokens
+   those classes do, mirroring .input for the control and .drop-panel for the menu.
+   Because the values are var() references, every theme re-skins these selects with
+   no per-theme branching. */
+const selectStyles: StylesConfig<SelectOption, true> = {
   control: (base, state) => ({
     ...base,
-    backgroundColor: '#1a0038',
-    borderColor: state.isFocused ? '#00ffff' : '#4400aa',
-    boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 255, 255, 0.35)' : 'none',
-    '&:hover': { borderColor: '#00ffff' },
+    minHeight: 42,
+    backgroundColor: 'color-mix(in srgb, var(--accent-purple) 8%, var(--bg-panel))',
+    borderWidth: 2,
+    borderStyle: 'solid',
+    borderColor: state.isFocused ? 'var(--accent-blue)' : 'var(--accent-purple)',
+    borderRadius: 'var(--radius-sm)',
+    boxShadow: state.isFocused
+      ? '0 0 0 3px color-mix(in srgb, var(--focus-ring) 45%, transparent)'
+      : 'none',
+    '&:hover': { borderColor: 'var(--accent-blue)' },
   }),
   menu: (base) => ({
     ...base,
-    backgroundColor: '#120025',
-    border: '1px solid #4400aa',
-    boxShadow: '0 4px 20px rgba(255, 0, 255, 0.2)',
+    backgroundColor: 'var(--bg-elevated)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-sm)',
+    overflow: 'hidden',
   }),
   menuList: (base) => ({ ...base, padding: 0 }),
   option: (base, state) => ({
     ...base,
     backgroundColor: state.isSelected
-      ? 'rgba(255, 0, 255, 0.25)'
+      ? 'color-mix(in srgb, var(--accent-pink) 26%, var(--bg-elevated))'
       : state.isFocused
-        ? 'rgba(255, 0, 255, 0.12)'
+        ? 'color-mix(in srgb, var(--accent-pink) 14%, var(--bg-elevated))'
         : 'transparent',
-    color: state.isSelected ? '#ff00ff' : '#f0ecff',
+    /* Text stays --text on every state, matching the .drop-row pattern in
+       components.css: only the background carries the accent, so the tint can
+       never eat into the label's contrast. Selection also gets extra weight so
+       it isn't signalled by color alone. */
+    color: 'var(--text)',
+    fontWeight: state.isSelected ? 600 : 400,
     cursor: 'pointer',
-    ':active': { backgroundColor: 'rgba(255, 0, 255, 0.35)' },
+    ':active': {
+      backgroundColor: 'color-mix(in srgb, var(--accent-pink) 34%, var(--bg-elevated))',
+    },
   }),
-  multiValue: (base) => ({ ...base, backgroundColor: 'rgba(255, 0, 255, 0.18)' }),
-  multiValueLabel: (base) => ({ ...base, color: '#ff00ff', fontWeight: 600 }),
+  multiValue: (base) => ({
+    ...base,
+    backgroundColor: 'color-mix(in srgb, var(--accent-pink) 20%, var(--bg-panel))',
+    borderRadius: 'var(--radius-sm)',
+  }),
+  multiValueLabel: (base) => ({ ...base, color: 'var(--text)', fontWeight: 600 }),
   multiValueRemove: (base) => ({
     ...base,
-    color: '#cc66ff',
-    ':hover': { backgroundColor: 'rgba(255, 0, 255, 0.35)', color: '#ff00ff' },
+    color: 'var(--text)',
+    ':hover': {
+      backgroundColor: 'color-mix(in srgb, var(--accent-pink) 38%, var(--bg-panel))',
+      color: 'var(--text)',
+    },
   }),
-  placeholder: (base) => ({ ...base, color: '#6655aa' }),
-  singleValue: (base) => ({ ...base, color: '#f0ecff' }),
-  input: (base) => ({ ...base, color: '#f0ecff' }),
+  placeholder: (base) => ({ ...base, color: 'var(--text-muted)' }),
+  singleValue: (base) => ({ ...base, color: 'var(--text)' }),
+  input: (base) => ({ ...base, color: 'var(--text)' }),
   dropdownIndicator: (base) => ({
     ...base,
-    color: '#9988bb',
-    ':hover': { color: '#ff00ff' },
+    color: 'var(--text-muted)',
+    ':hover': { color: 'var(--accent-blue)' },
   }),
   clearIndicator: (base) => ({
     ...base,
-    color: '#9988bb',
-    ':hover': { color: '#ff00ff' },
+    color: 'var(--text-muted)',
+    ':hover': { color: 'var(--accent-blue)' },
   }),
-  indicatorSeparator: (base) => ({ ...base, backgroundColor: '#4400aa' }),
-};
-
-const classicStyles: StylesConfig<SelectOption, true> = {
-  control: (base, state) => ({
-    ...base,
-    backgroundColor: '#f9fafb',
-    borderColor: state.isFocused ? '#2563eb' : '#e5e7eb',
-    boxShadow: state.isFocused ? '0 0 0 2px #bfdbfe' : 'none',
-    '&:hover': { borderColor: '#3b82f6' },
-  }),
-  menu: (base) => ({
-    ...base,
-    backgroundColor: '#ffffff',
-    border: '1px solid #e5e7eb',
-  }),
-  menuList: (base) => ({ ...base, padding: 0 }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? '#2563eb'
-      : state.isFocused
-        ? '#eff6ff'
-        : 'transparent',
-    color: state.isSelected ? '#ffffff' : '#111827',
-    cursor: 'pointer',
-    ':active': { backgroundColor: '#dbeafe' },
-  }),
-  multiValue: (base) => ({ ...base, backgroundColor: '#dbeafe' }),
-  multiValueLabel: (base) => ({ ...base, color: '#1d4ed8' }),
-  multiValueRemove: (base) => ({
-    ...base,
-    color: '#3b82f6',
-    ':hover': { backgroundColor: '#bfdbfe', color: '#1d4ed8' },
-  }),
-  placeholder: (base) => ({ ...base, color: '#9ca3af' }),
-  singleValue: (base) => ({ ...base, color: '#111827' }),
-  input: (base) => ({ ...base, color: '#111827' }),
-  dropdownIndicator: (base) => ({
-    ...base,
-    color: '#6b7280',
-    ':hover': { color: '#374151' },
-  }),
-  clearIndicator: (base) => ({
-    ...base,
-    color: '#6b7280',
-    ':hover': { color: '#374151' },
-  }),
-  indicatorSeparator: (base) => ({ ...base, backgroundColor: '#e5e7eb' }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--border)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--text-muted)' }),
 };
 
 export function useReactSelectStyles(): StylesConfig<SelectOption, true> {
-  const { theme } = useTheme();
-  return theme === 'neon' ? neonStyles : classicStyles;
+  return selectStyles;
 }

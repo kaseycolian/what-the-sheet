@@ -1,57 +1,63 @@
+/* Layout only. The header rail, brand lockup, motion switch and theme console are
+   the vendored site-header.css classes applied in App.tsx (.site-header,
+   .hdr-inner, .brand, .brand-name, .brand-title) — nothing about the header is
+   styled here any more. The page background and .fx-grid backdrop live on <body>
+   (see index.css / index.html). */
 .page {
   min-height: 100dvh;
-  background-color: var(--bg-page);
-}
-
-.header {
-  background-color: var(--bg-header);
-  padding: 1.25rem 2rem;
-}
-
-.headerInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  max-width: 1200px;
-  margin-inline: auto;
-}
-
-.headerText {
+  /* A column so the footer settles at the bottom when the page is shorter than
+     the viewport, instead of ending halfway down it. */
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-}
-
-.title {
-  margin: 0;
-  font-size: 1.625rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--text-header);
-  text-shadow: var(--text-glow-header);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 0.9375rem;
-  color: var(--text-header-sub);
 }
 
 .main {
-  max-width: 1200px;
+  flex: 1;
+  width: 100%;
+  max-width: var(--wts-content);
   margin-inline: auto;
-  padding: 2rem 1.5rem;
+  padding: 2rem var(--wts-gutter);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* <main> takes focus from the skip link, so it must not draw a ring as a
+   scroll container would — the link's own target is the landmark, not a control. */
+.main:focus {
+  outline: none;
+}
+
+.main:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+
+/* The page's opening block: a small uppercase label over the sentence that
+   explains the app. Type and color come from the theme classes (.t-h4 on the
+   label, .t-body on the sentence) — nothing here restates them, so the classes
+   keep controlling what they were added to control. The hierarchy is carried by
+   case, weight and color rather than by size, which is how the theme's own
+   scale separates a label from body text. */
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.introTitle {
+  margin: 0;
+}
+
+/* No max-width and no fixed height, so the SC 1.4.12 spacing overrides cannot
+   clip it. */
+.introText {
+  margin: 0;
+}
+
+/* .panel supplies the surface, border and radius; these add the app's own spacing. */
 .card {
-  background-color: var(--bg-card);
-  border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: var(--shadow-card);
 }
 
 .filterStack {
@@ -64,8 +70,5 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background-color: var(--bg-card);
-  border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: var(--shadow-card);
 }

@@ -1,32 +1,6 @@
+/* .btn.btn-solid.a-pink supplies every color and state (hover / active /
+   focus-visible / disabled). This only stops the button stretching to the full
+   width of the column-flex .filterStack it sits in. */
 .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-on-primary);
-  background-color: var(--color-primary);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.15s, box-shadow 0.15s;
   align-self: flex-start;
-  box-shadow: var(--glow-primary);
-}
-
-.button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
-}
-
-.button:focus-visible {
-  outline: 3px solid var(--focus-ring-button);
-  outline-offset: 2px;
-}
-
-.button:disabled {
-  background-color: var(--color-primary-disabled);
-  color: var(--color-primary-disabled-text);
-  cursor: not-allowed;
-  box-shadow: none;
 }

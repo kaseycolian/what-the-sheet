@@ -19,8 +19,8 @@ export function ColumnFilters({
   if (selectedHeaders.length === 0) return null;
 
   return (
-    <fieldset className={styles.fieldset}>
-      <legend className={styles.legend}>Column Filters</legend>
+    <fieldset className={`group ${styles.fieldset}`}>
+      <legend className={`t-h4 ${styles.legend}`}>Column Filters</legend>
       <div className={styles.grid}>
         {selectedHeaders.map((header) => (
           <PerHeaderSelect

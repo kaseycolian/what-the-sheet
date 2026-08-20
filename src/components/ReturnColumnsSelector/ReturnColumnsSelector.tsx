@@ -2,7 +2,6 @@ import Select from 'react-select';
 import type { MultiValue } from 'react-select';
 import type { SelectOption } from '../../types';
 import { useReactSelectStyles } from '../../hooks/useReactSelectStyles';
-import styles from './ReturnColumnsSelector.module.css';
 
 type Props = {
   headers: string[];
@@ -24,8 +23,8 @@ export function ReturnColumnsSelector({
   }
 
   return (
-    <div className={styles.wrapper}>
-      <label htmlFor="return-cols" className={styles.label}>
+    <div className="field">
+      <label htmlFor="return-cols" className="field-label">
         Columns to display in results
       </label>
       <Select<SelectOption, true>

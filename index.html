@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>What the Sheet</title>
-    <script>
-      (function () {
-        var t = localStorage.getItem('wts-theme') || 'neon';
-        document.documentElement.dataset.theme = t;
-      })();
-    </script>
+    <!-- Applies the saved/deep-linked theme before first paint (no flash).
+         MUST stay an external script — inline scripts are blocked under strict CSP. -->
+    <script src="/theme-init.js"></script>
+    <!-- Upgrades the theme <select> to the accessible listbox. Deferred, so it
+         runs before the app mounts; external for the same CSP reason as above.
+         Without it the native <select> still switches themes. -->
+    <script defer src="/dropdown.js"></script>
   </head>
-  <body>
+  <body class="fx-grid">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

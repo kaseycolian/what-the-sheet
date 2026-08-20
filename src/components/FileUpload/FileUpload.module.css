@@ -1,28 +1,33 @@
+/* No dashed drop-zone class exists in components.css, so the zone keeps its own
+   markup and is repainted on theme tokens: purple at rest (matching .input),
+   blue on hover/focus, pink while dragging. Fills use color-mix so they tint the
+   panel underneath in every theme instead of a fixed rgba(). */
 .zone {
-  border: 2px dashed var(--border-zone);
-  border-radius: 8px;
-  padding: 2rem;
+  border: 2px dashed var(--accent-purple);
+  border-radius: var(--radius-sm);
+  /* Tapers on phones: three nested paddings (main, panel, zone) leave very
+     little content width at 320px. */
+  padding: clamp(1rem, 5vw, 2rem);
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.15s, background-color 0.15s;
-  background-color: var(--bg-zone);
+  background: color-mix(in srgb, var(--accent-purple) 8%, var(--bg-panel));
+  transition: border-color var(--dur) ease, background var(--dur) ease;
 }
 
 .zone:hover,
 .zone:focus-within {
-  border-color: var(--border-zone-hover);
-  background-color: var(--bg-zone-hover);
+  border-color: var(--accent-blue);
+  background: color-mix(in srgb, var(--accent-blue) 10%, var(--bg-panel));
 }
 
-.dragging {
-  border-color: var(--border-zone-drag);
-  background-color: var(--bg-zone-drag);
+.dragging,
+.dragging:hover {
+  border-color: var(--accent-pink);
+  background: color-mix(in srgb, var(--accent-pink) 14%, var(--bg-panel));
 }
 
 .label {
   display: block;
-  font-size: 1rem;
-  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -30,15 +35,16 @@
   margin-top: 0.75rem;
   display: block;
   margin-inline: auto;
-}
-
-.input:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  /* A native file input sizes itself from its button plus the file name, which
+     is wider than this zone's content box on a 320px screen — it pushed the
+     whole page into horizontal scroll. */
+  max-width: 100%;
 }
 
 .error {
-  margin-top: 0.5rem;
-  color: var(--color-error);
-  font-size: 0.875rem;
+  margin: 0.75rem 0 0;
+  text-align: left;
 }

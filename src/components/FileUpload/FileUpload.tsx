@@ -59,7 +59,7 @@ export function FileUpload({ onFileParsed }: Props) {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <label className={styles.label} htmlFor="csv-input">
+      <label className={`t-body ${styles.label}`} htmlFor="csv-input">
         {fileName ? (
           <span>
             <strong>{fileName}</strong> loaded — drop or click to replace
@@ -78,7 +78,10 @@ export function FileUpload({ onFileParsed }: Props) {
         onChange={onChange}
       />
       {error && (
-        <p role="alert" className={styles.error}>
+        <p role="alert" className={`notice error ${styles.error}`}>
+          <span className="icon" aria-hidden="true">
+            !
+          </span>
           {error}
         </p>
       )}

@@ -1,0 +1,222 @@
+/* =============================================================================
+   what-the-sheet — local adaptation of the vendored site-header.css.
+
+   The vendored file is the source of truth and is never hand-edited, so every
+   deviation this app needs lives here and an update to site-header.css stays a
+   clean overwrite. Load it immediately AFTER site-header.css.
+
+   This header has THREE zones, not the reference's four: there is no page nav,
+   because this is a single-page app with nowhere to navigate to. And the two
+   right-hand zones are wrapped in one .hdr-controls cluster (ThemeSelector.tsx),
+   so the preference and the theme control read — and wrap — as a pair.
+
+       brand ....... the wordmark (icon slot reserved, see App.tsx)
+       controls .... [ motion switch | theme console ]
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   1. The rail's inner measures from the SAME tokens as <main>.
+
+   The vendored inner is 1600px wide with clamp() gutters while the page content
+   is 1200px with 24px gutters, so nothing in the header lined up with anything
+   below it: measured at 1536px the header content ran 0…1536 against panels at
+   192…1344. Sharing the tokens puts the wordmark's left edge and the console's
+   right edge exactly on the panel edges.
+
+   Only the INNER is constrained — .site-header itself stays full-bleed, so the
+   glass and the lit tube still span the viewport.
+   -------------------------------------------------------------------------- */
+.hdr-inner {
+  max-width: var(--wts-content);
+  padding-inline: var(--wts-gutter);
+  /* Wrap at every width so the cluster drops to its own row exactly when it
+     stops fitting, rather than on a px breakpoint guessed against a font nobody
+     tested — the same reasoning the vendored 620px block gives for wrapping. */
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+/* The .t-h1 wordmark inherits the page's 1.5 line-height, which on a 28px font
+   is a 42px box around 37px of glyphs — and "WHAT THE SHEET" has no descenders,
+   so most of the space below the letters is empty line box. Between two rows
+   that reads as a gap nobody chose. 1.15 is the same figure components.css uses
+   for headings inside .surface. */
+.brand-name { line-height: 1.15; }
+
+/* The block gutter tapers sooner than the vendored clamp(13px, 2.2vw, 22px):
+   this rail carries a 28px wordmark and goes to two rows at medium widths, so
+   the vendored figure left too much air between them. Still a single continuous
+   clamp rather than a banded switch — a media query here put a 16px step at the
+   boundary, i.e. the rail getting TALLER as the viewport grew, which is the
+   cliff the vendored file uses a clamp to avoid in the first place. Tops out at
+   the same 22px, so the widest screens are unchanged. */
+.hdr-inner { padding-block: clamp(10px, 1.4vw, 22px); }
+
+/* The vendored @media (max-width: 1080px) block lays .hdr-inner out as
+   `grid-template-columns: auto 1fr` to pair the reference's FOUR zones two per
+   row. With two children that grid cannot wrap and cannot shrink past
+   min-content, so the cluster overflowed the rail from 621px up. Keep the flex
+   rail at every width instead — wrapping asks whether the content fits, which is
+   the question a grid track never gets to answer. */
+@media (max-width: 1080px) {
+  .hdr-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 18px;
+  }
+}
+
+/* The wordmark is an <h1> here rather than the reference's <a>-wrapped <span>,
+   because it is this page's real heading and there is nowhere for a home link
+   to go. It carries .t-h1 as well, which supplies the size, color, glow and
+   italic — so this must NOT restate font-size: an `h1.brand-title` rule is
+   (0,1,1) and would beat .t-h1's (0,1,0), silently pinning the wordmark back to
+   the lockup's inherited 17px. Margin reset only. */
+h1.brand-title { margin: 0; }
+
+/* -----------------------------------------------------------------------------
+   2. The controls cluster.
+
+   A tighter internal gap than the rail's own, so the pair reads as one object
+   against the wordmark instead of three evenly-spaced siblings. margin-left:auto
+   holds it right — the reference gets that from .pagenav, which this header does
+   not have.
+   -------------------------------------------------------------------------- */
+.hdr-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* The console takes whatever the switch leaves on the cluster's line. The
+   vendored width is a fixed 316px on .dropdown (measured for the reference's
+   four-zone rail); here the console is the flexible half of a two-item cluster. */
+.theme-console {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: 460px;
+}
+.theme-console .dropdown {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   3. What the console sheds, and in what order.
+
+   The console loses its decoration before it loses its value, because the theme
+   name is the one label always on screen:
+
+       >= 620px   cap + lamps + value
+       520-620px  cap + value          (lamps go first)
+       < 520px    value                (cap goes second)
+
+   The vendored file clips .tc-cap at 620px and keeps the lamps, which is the
+   opposite order — so this restores the cap through the middle band and re-clips
+   it lower down.
+   -------------------------------------------------------------------------- */
+@media (max-width: 620px) {
+  /* The lamps are aria-hidden decoration — a readout of the palette that the
+     panel's own row dots repeat — so removing them outright costs nothing. */
+  .tc-lamps { display: none; }
+
+  /* Undo the vendored clip: the cap survives this band. Restated in full rather
+     than with `all: unset` so it keeps the layout the base rule gives it. */
+  .tc-cap {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0 11px;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: nowrap;
+    border-right: 1px solid color-mix(in srgb, var(--accent-purple) 35%, var(--border));
+  }
+
+  /* The vendored block assigns `order` to slot a generated line break between
+     its four zones, giving .brand order:1. This header's two children are the
+     brand and the cluster — and the cluster, unstyled, defaults to order:0, so
+     it sorted AHEAD of the wordmark and the controls rendered above the
+     identity. Tab order stayed in DOM order, so visual order no longer matched
+     it (SC 2.4.3). Reset both to DOM order; with two items there is nothing to
+     slot and nothing to reorder. */
+  .brand,
+  .hdr-controls { order: 0; }
+
+  /* The vendored block uppercases the descriptor below 620px so it takes the
+     console cap's voice. This descriptor is a proper name for what the app is,
+     so its casing is part of the words — it reads the same at every width. */
+  .brand-tag { text-transform: none; }
+
+  /* The vendored lockup is `white-space: nowrap` because its wordmark steps down
+     to 16px/15px on phones. Ours carries .t-h1, which pins it at 28px italic with
+     .13em tracking — measured, that is wider than a 320px viewport on the Verdana
+     fallback and pushed the page into horizontal scroll. Let it wrap instead:
+     reflow is what SC 1.4.10 asks for at 320px, and wrapping keeps the wordmark
+     at the size .t-h1 gives it rather than quietly shrinking it back. */
+  .brand-name { white-space: normal; max-width: 100%; }
+  .brand-title { overflow-wrap: break-word; max-width: 100%; }
+  /* Allowing the wrap is not enough on its own: the vendored block sets
+     `.brand { flex: none }`, so the lockup keeps its max-content width and the
+     text never gets a narrower box to wrap into — it just overflows. It has to
+     be shrinkable for `white-space: normal` to mean anything. */
+  .brand { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+
+  /* The same block pulls the second flex line up 8px to pay for a row-gap
+     charged on both sides of that generated break. This header has no such
+     break, so the pull would just misalign the cluster against the wordmark. */
+  .motion,
+  .theme-console { margin-top: 0; }
+  .theme-console { margin-left: 0; max-width: none; }
+  .hdr-inner::before { content: none; }
+}
+
+@media (max-width: 520px) {
+  /* CLIPPED, not display:none. .tc-cap is the console's accessible name via
+     aria-labelledby, and a name pointing at a hidden element resolves to
+     nothing — the trigger would announce as a bare button. */
+  .tc-cap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* NOTE: .dropdown-swatch is deliberately untouched at every width — those are
+   the panel rows' colored dots, and they always render. The vendored blocks only
+   step them down in size (6px at 1080px, 5px at 620px), which is still shown. */
+
+/* -----------------------------------------------------------------------------
+   4. Non-text contrast on the console's boundary (SC 1.4.11).
+
+   The vendored border is `color-mix(in srgb, var(--accent-purple) 50%,
+   var(--border))`, which on the light themes lands at 2.84:1 against the rail
+   glass outside it and 2.47:1 against the console's own fill inside it — both
+   under the 3:1 a UI component's boundary needs. Worst case measured is
+   synthwave-sunset-light; every light theme fails, every dark one passes.
+
+   Raising the accent's share is the smallest fix that stays entirely in tokens:
+   at 75% the worst case is 4.42:1 outside and 3.59:1 inside, and the hover state
+   (full --accent-purple) is still a visible step up from it.
+
+   This is an upstream characteristic of site-header.css, not something this app
+   introduced — worth reporting to the theme-service repo, which must not be
+   edited from here.
+   -------------------------------------------------------------------------- */
+.theme-console {
+  border-color: color-mix(in srgb, var(--accent-purple) 75%, var(--border));
+}

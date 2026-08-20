@@ -16,23 +16,23 @@ export function ResultTable({ title, rows, columns, id, variant, tableRef }: Pro
         id={id}
         ref={tableRef}
         tabIndex={-1}
-        className={`${styles.heading} ${styles[variant]}`}
+        className={`t-h2 ${styles.heading} ${styles[variant]}`}
       >
         {title}{' '}
-        <span className={styles.count}>({rows.length} row{rows.length !== 1 ? 's' : ''})</span>
+        <span className={`t-muted ${styles.count}`}>({rows.length} row{rows.length !== 1 ? 's' : ''})</span>
       </h2>
 
       {rows.length === 0 ? (
-        <p role="status" className={styles.empty}>
+        <p role="status" className={`t-muted ${styles.empty}`}>
           No results.
         </p>
       ) : (
-        <div className={styles.tableWrapper}>
+        <div className={`fx-scroll ${styles.tableWrapper}`}>
           <table className={styles.table} aria-labelledby={id}>
             <thead>
               <tr>
                 {columns.map((col) => (
-                  <th key={col} scope="col" className={styles.th}>
+                  <th key={col} scope="col" className={`t-h4 ${styles.th}`}>
                     {col}
                   </th>
                 ))}
@@ -42,7 +42,7 @@ export function ResultTable({ title, rows, columns, id, variant, tableRef }: Pro
               {rows.map((row, i) => (
                 <tr key={i} className={styles.tr}>
                   {columns.map((col) => (
-                    <td key={col} className={styles.td}>
+                    <td key={col} className={`t-body ${styles.td}`}>
                       {row[col] ?? ''}
                     </td>
                   ))}

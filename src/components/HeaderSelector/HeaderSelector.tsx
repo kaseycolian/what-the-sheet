@@ -2,7 +2,6 @@ import Select from 'react-select';
 import type { MultiValue } from 'react-select';
 import type { SelectOption } from '../../types';
 import { useReactSelectStyles } from '../../hooks/useReactSelectStyles';
-import styles from './HeaderSelector.module.css';
 
 type Props = {
   headers: string[];
@@ -20,8 +19,8 @@ export function HeaderSelector({ headers, selectedHeaders, onChange }: Props) {
   }
 
   return (
-    <div className={styles.wrapper}>
-      <label htmlFor="header-selector" className={styles.label}>
+    <div className="field">
+      <label htmlFor="header-selector" className="field-label">
         Filter by headers
       </label>
       <Select<SelectOption, true>

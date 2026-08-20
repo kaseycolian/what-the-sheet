@@ -1,3 +1,6 @@
+/* components.css has no table class, so the table keeps its own markup and is
+   repainted on theme tokens. Both headings use .t-h2 for size/weight; the
+   not-matched one is recolored to the pink accent below. */
 .section {
   display: flex;
   flex-direction: column;
@@ -5,44 +8,49 @@
 }
 
 .heading {
-  font-size: 1.25rem;
-  font-weight: 700;
   margin: 0;
   padding: 0;
+  /* App.tsx focuses this heading after a report runs. The header is sticky, so
+     without this the browser scrolls it to y=0 — underneath the rail, silently. */
+  scroll-margin-top: calc(var(--wts-rail-h) + 12px);
 }
 
+/* Stated explicitly on both variants so the pair reads as one decision:
+   matched = the green "confirm" accent, not matched = the pink one. */
+.in {
+  color: var(--accent-green);
+  text-shadow: var(--tglow-green);
+}
+
+.out {
+  color: var(--accent-pink);
+  text-shadow: var(--tglow-pink);
+}
+
+/* The heading is focused programmatically after a report runs, so it needs a
+   visible ring even though it is not a components.css control. */
 .heading:focus-visible {
-  outline: 2px solid var(--focus-ring-button);
-  outline-offset: 2px;
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
   border-radius: 3px;
-}
-
-.heading.in {
-  color: var(--color-matched);
-  text-shadow: var(--glow-matched);
-}
-
-.heading.out {
-  color: var(--color-unmatched);
-  text-shadow: var(--glow-unmatched);
 }
 
 .count {
   font-weight: 400;
-  font-size: 0.9375rem;
-  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: none;
 }
 
 .empty {
-  color: var(--text-muted);
   font-style: italic;
   margin: 0;
 }
 
 .tableWrapper {
   overflow-x: auto;
-  border-radius: 6px;
-  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
 }
 
 .table {
@@ -51,28 +59,28 @@
   font-size: 0.875rem;
 }
 
+/* .t-h4 owns the type and color (the theme's small-label voice, shared with the
+   fieldset legend and the field labels), so neither is restated here. */
 .th {
-  background-color: var(--bg-table-header);
+  background: var(--bg-elevated);
   text-align: left;
   padding: 0.625rem 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
   border-bottom: 2px solid var(--border-strong);
   white-space: nowrap;
 }
 
 .tr:nth-child(even) {
-  background-color: var(--bg-row-stripe);
+  background: color-mix(in srgb, var(--accent-purple) 8%, transparent);
 }
 
 .tr:hover {
-  background-color: var(--bg-row-hover);
+  background: color-mix(in srgb, var(--accent-pink) 12%, transparent);
 }
 
+/* .t-body owns the type and color. */
 .td {
   padding: 0.5rem 0.875rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
 

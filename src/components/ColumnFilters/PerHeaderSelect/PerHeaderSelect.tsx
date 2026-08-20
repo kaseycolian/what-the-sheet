@@ -2,7 +2,6 @@ import Select from 'react-select';
 import type { MultiValue } from 'react-select';
 import type { SelectOption } from '../../../types';
 import { useReactSelectStyles } from '../../../hooks/useReactSelectStyles';
-import styles from './PerHeaderSelect.module.css';
 
 type Props = {
   header: string;
@@ -21,8 +20,8 @@ export function PerHeaderSelect({ header, options, selectedValues, onChange }: P
   }
 
   return (
-    <div className={styles.wrapper}>
-      <label htmlFor={inputId} className={styles.label}>
+    <div className="field">
+      <label htmlFor={inputId} className="field-label sub">
         {header}
       </label>
       <Select<SelectOption, true>

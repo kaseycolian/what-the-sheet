@@ -1,0 +1,45 @@
+/* =============================================================================
+   what-the-sheet — local adaptation of the vendored site-footer.css.
+
+   The vendored file is the source of truth and is never hand-edited; every
+   deviation lives here, so an update to site-footer.css stays a clean overwrite.
+   Load it immediately AFTER site-footer.css.
+
+   This footer carries ONE item — the source link. The reference footer's two
+   zones (the brand lede and the cross-linked product index) are not used: this
+   app is not part of a product family and its identity is already stated in the
+   header, so restating it here would only add a second tab stop to nothing.
+   ============================================================================= */
+
+/* Measure from the same tokens as .hdr-inner and <main>, so the source link
+   lines up with the header's wordmark and with the panels between them. The
+   vendored 1600px + clamp() gutters would overhang the content column exactly
+   the way the header's did. Only the inner is constrained — the slab itself
+   stays full-bleed, so the glass and the lit tube still span the viewport. */
+.ftr-inner {
+  max-width: var(--wts-content);
+  padding-inline: var(--wts-gutter);
+  /* The vendored rule is `display: grid` with a 26px gap for its two zones. With
+     one child that gap has nothing to apply to; justify-items keeps the link at
+     its own width rather than stretching the grid item across the column, and
+     ends it against the same edge the theme console holds in the header. */
+  justify-items: end;
+}
+
+/* Kept a touch tighter than the vendored 30/34, in the same spirit as the
+   header's own gutter: this page is one screen of work, not a site with a
+   masthead to anchor. The 4px optical bias toward the bottom is preserved —
+   the slab ends the page, so an even split reads top-heavy. */
+.ftr-inner {
+  padding-block: 22px 26px;
+}
+
+/* The vendored file splits .ftr-inner into two columns at 1080px — a 330px lede
+   beside a 1fr product index. With one child that first track became the whole
+   layout, so `justify-items: end` ended the link against the 330px track rather
+   than the content column. One zone, one column. */
+@media (min-width: 1080px) {
+  .ftr-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -9,7 +9,7 @@ export function GetReportButton({ onClick, disabled }: Props) {
   return (
     <button
       type="button"
-      className={styles.button}
+      className={`btn btn-solid a-pink ${styles.button}`}
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}

@@ -1,0 +1,599 @@
+/* =============================================================================
+   The A11Y Way — site header. Shared by a11y-way-pages/site/overview.html and a11y-way-pages/site/preview.html.
+
+   ONE source of truth: both pages link this file, so the header cannot drift
+   between them. Load it AFTER components.css — a few rules here deliberately
+   override component defaults at equal specificity and rely on source order.
+
+   Four zones, always in this DOM order:
+
+       brand ....... who this is        (identity)
+       page nav .... where you are      (Overview / Themes)
+       motion ...... a preference       (quiet, lowest priority)
+       theme ....... the product itself (loudest, always reachable)
+
+   The theme console is the point of the whole site, so it gets the strongest
+   treatment and never leaves the top-right. The responsive rules only ever
+   RE-FLOW the four zones, never reorder them, so tab order always matches
+   reading order.
+
+   Nothing in the brand zone is ever hidden for space. The A11Y Way ships more
+   than one site off this header, and they share a mark and a wordmark — the
+   descriptor beside the wordmark ("Themes" here) is the only thing that says
+   which one you are looking at, so it has to survive the width where a visitor
+   has the least other context. Below 620px the lockup stacks instead, which
+   costs no height because the nav pills already make that row 28px tall.
+   Down to 320px the phone rules only step type and gutters down.
+
+   Every value is a theme token, so the header re-skins with the page it sits on.
+   ============================================================================= */
+
+.site-header, .site-header *, .skip-link { box-sizing: border-box; }
+
+/* ---------------------------------------------------------------------------
+   Skip link — first thing in the tab order, invisible until focused.
+   --------------------------------------------------------------------------- */
+.skip-link {
+  position: fixed; top: 10px; left: 10px; z-index: 100;
+  transform: translateY(calc(-100% - 14px));
+  transition: transform var(--dur) ease;
+  padding: 10px 16px; border-radius: var(--radius-sm);
+  background: var(--bg-elevated); color: var(--text);
+  border: 2px solid var(--accent-blue);
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid var(--focus-ring); outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   The rail
+   --------------------------------------------------------------------------- */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  /* Translucent so the page's neon grid shows through as the content scrolls
+     under it — the header reads as glass over the rink, not a solid slab. */
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(10px) saturate(1.15);
+}
+
+/* effects.css's .fx-grid sets `position: relative` so its absolute ::before has a
+   box to fill. Same specificity as the rule above, so whichever file loads last
+   wins — and if that is effects.css, the rail silently stops being sticky the
+   moment someone applies the background effect to the header. 0-2-0 wins in
+   either direction, so the rail's own positioning no longer depends on order. */
+.site-header.fx-grid { position: sticky; top: 0; }
+
+/* The lit tube along the bottom edge. Deliberately the same pink->purple->blue
+   ramp as the #grad-flow gradient the overview diagrams draw their connectors
+   with, so the header edge and the diagrams read as one system. It re-colors
+   with the theme, which makes it a readout as well as a rule. */
+.site-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple), var(--accent-blue));
+  box-shadow: 0 0 calc(10px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-purple) 45%, transparent);
+}
+
+/* Both gutters are fluid, and they are independent of each other.
+
+   VERTICAL is the rail's breathing room: 22px once there is a desktop's worth of
+   width, tapering to 13px on a phone. It has to taper — this bar is sticky, so
+   every pixel of padding is a pixel of a small screen permanently spent, and the
+   layout below 620px is already two or three rows tall. A clamp rather than a
+   step at each breakpoint so the rail grows smoothly instead of jumping 9px at
+   621; it is a gutter, which is exactly what this file uses clamp() for.
+
+   HORIZONTAL is the shared rail geometry — it lines header content up with
+   footer content and with .ftr-inner's identical clamp. The two are set together
+   here for readability only; changing one must not drag the other. */
+.hdr-inner {
+  max-width: 1600px; margin: 0 auto;
+  padding: clamp(13px, 2.2vw, 22px) clamp(16px, 3vw, 32px);
+  display: flex; align-items: center; gap: 18px;
+}
+
+/* ---------------------------------------------------------------------------
+   Brand — the favicon's arch mark, then the wordmark. The separator dot is the
+   only always-lit piece of the lockup; the words stay quiet.
+   --------------------------------------------------------------------------- */
+.brand {
+  display: inline-flex; align-items: center; gap: 11px;
+  text-decoration: none; color: var(--text); min-width: 0;
+  margin-right: 4px; border-radius: var(--radius-sm);
+}
+.brand:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; }
+
+/* The mark itself is a shared asset — assets/brand-mark.svg. Its strokes and
+   their colors live in that file (var(--accent-*) with brand fallbacks), because
+   the <img> that loads it is an isolated document this stylesheet can't reach;
+   assets/brand-mark-theme.js carries the resolved tokens across. The glow below
+   is a filter on the element, so it re-themes from here with no JS. */
+.brand-mark {
+  width: 26px; height: 26px; flex: none;
+  filter: drop-shadow(0 0 calc(3px * var(--glow-strength))
+                      color-mix(in srgb, var(--accent-pink) 55%, transparent));
+  transition: transform var(--dur) ease;
+}
+.brand:hover .brand-mark { transform: translateY(calc(var(--motion) * -1px)); }
+
+/* The lockup's type ladder, in one place. The WORDMARK's size lives on
+   .brand-name — .brand-title has no font-size of its own and inherits it, as
+   does .brand-dot, so the separator can never fall out of scale with the words
+   it separates. The tag carries its own size because it is a different face.
+   Both step twice, and the wordmark stays the larger of the two at every step:
+
+       wordmark   17px  ->  16px (<=620)  ->  15px (<=430)
+       tag        13.5  ->  13            ->  12
+
+   The steps are deliberately shallow. The rail's vertical gutter is fluid now
+   (clamp on .hdr-inner), so the header is markedly taller than it was and small
+   type reads as lost in it rather than compact — and the phone end was the worst
+   of it, where a tracked 10.5px cap was at the floor of comfortable reading.
+
+   These sizes are not free: they set the brand's width, which is what decides
+   the viewport at which the page nav wraps to its own row (see the phones block
+   below). Grow them and that wrap happens sooner — measure, don't assume.
+   .ftr-wordmark in site-footer.css copies the 15px verbatim so the header and
+   footer lockups stay the same object; move them together. */
+.brand-name {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  font-size: 17px; white-space: nowrap; min-width: 0;
+}
+.brand-title {
+  font-weight: 800; letter-spacing: .13em; text-transform: uppercase;
+}
+.brand-dot { color: var(--accent-pink); font-weight: 700; }
+.brand-tag {
+  font-family: var(--font-mono); font-size: 13.5px; font-weight: 400;
+  letter-spacing: .06em; color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Page nav — a two-stop segmented control. Both destinations are always
+   visible and the current one is lit, so the header answers "where am I"
+   without a duplicate page title shouting it.
+   --------------------------------------------------------------------------- */
+.pagenav {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 3px; margin-right: auto; min-width: 0;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+}
+.pagenav-seg {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 28px; padding: 0 15px; min-width: 0;
+  /* The label is wrapped in a single .seg-label rather than sitting directly in
+     here, which looks redundant and is not. This is a flex container: a bare
+     "Preview" plus a <span> tail would be TWO flex items, and that breaks the
+     word twice over — flex strips each item's leading and trailing whitespace,
+     so the words render welded ("PreviewThemes"), and the accessible-name
+     algorithm then inserts its own separator between the two blockified items,
+     so working around the first problem with a gap or an &nbsp; buys a DOUBLE
+     space in the announced name. One flex item, with the tail inline inside it,
+     is ordinary text flow again: the space is just a space, in the DOM, on
+     screen and in the accessible name. */
+  border: 1px solid transparent; border-radius: var(--radius-pill);
+  font-family: var(--font-ui); font-size: 11.5px; font-weight: 700;
+  letter-spacing: .11em; text-transform: uppercase;
+  color: var(--text-muted); text-decoration: none; white-space: nowrap;
+  transition: color var(--dur) ease, background-color var(--dur) ease,
+              border-color var(--dur) ease;
+}
+a.pagenav-seg:hover {
+  color: var(--text);
+  background-color: color-mix(in srgb, var(--text) 9%, transparent);
+}
+a.pagenav-seg:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+/* Current page: full-contrast text on a lifted chip, so the "selected" signal
+   is never carried by color alone. */
+.pagenav-seg[aria-current="page"] {
+  color: var(--text); cursor: default;
+  background-color: color-mix(in srgb, var(--accent-blue) 10%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--accent-blue) 50%, var(--border));
+  box-shadow: 0 0 calc(9px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-blue) 30%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Reduce motion — a preference, so it stays small and muted. Keeps the shipped
+   .switch geometry (44x24) rather than shrinking below a comfortable target.
+   --------------------------------------------------------------------------- */
+.motion {
+  font-size: 12px; color: var(--text-muted); gap: 9px;
+  white-space: nowrap; transition: color var(--dur) ease;
+}
+.motion:hover { color: var(--text); }
+
+/* ---------------------------------------------------------------------------
+   Theme console — the hero control.
+
+   A labelled instrument rather than a bare dropdown: a cap that names it, four
+   lamps showing the palette you are currently on, and the control filling the
+   rest. The lamps are plain divs painted with --accent-*, so switching the
+   theme re-colors them for free and they roll in sequence — the smallest
+   possible demonstration of the thing this site is for. No JS involved.
+
+   The control itself is themes/dropdown.js's accessible listbox, grouped by
+   theme name with each theme's own four accents as a swatch. It degrades to the
+   native <select> underneath if that script never loads, so both are styled
+   below. The console is only a shell — it keeps the border, glow and focus ring,
+   and the trigger inside it goes flat.
+
+   `.dropdown-console` in themes/dropdown.css is the generic form of this — cap,
+   divider, pill, flat trigger — and the gallery's theme-picker card uses it. This
+   block stays separate rather than extending it because the header adds the four
+   lamps, a measured fixed width and four breakpoints on top, and because this file
+   is installed into other repos on its own. The shared parts are duplicated on
+   purpose: change one, change the other.
+   --------------------------------------------------------------------------- */
+.theme-console {
+  display: inline-flex; align-items: center; height: 36px; min-width: 0;
+  border-radius: var(--radius); overflow: hidden; cursor: pointer;
+  background: color-mix(in srgb, var(--accent-purple) 7%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--accent-purple) 50%, var(--border));
+  box-shadow: 0 0 calc(12px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-purple) 20%, transparent);
+  transition: border-color var(--dur) ease, box-shadow var(--dur) ease;
+}
+.theme-console:hover {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 calc(18px * var(--glow-strength))
+              color-mix(in srgb, var(--accent-purple) 38%, transparent);
+}
+/* The trigger is the real control, so the ring belongs to the console it fills.
+   Both selectors are live: the first once dropdown.js has enhanced it, the
+   second on the native fallback. */
+.theme-console:has(.dropdown-toggle:focus-visible),
+.theme-console:has(select:focus-visible) {
+  outline: 3px solid var(--focus-ring); outline-offset: 2px;
+}
+.theme-console:has(select:focus-visible) select { outline: none; }
+
+.tc-cap {
+  display: flex; align-items: center; align-self: stretch; padding: 0 11px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accent-purple) 35%, var(--border));
+}
+
+.tc-lamps { display: inline-flex; align-items: center; gap: 5px; padding: 0 11px; flex: none; }
+.tc-lamps i {
+  width: 8px; height: 8px; border-radius: 50%;
+  background-color: var(--lamp);
+  box-shadow: 0 0 calc(5px * var(--glow-strength))
+              color-mix(in srgb, var(--lamp) 65%, transparent);
+  /* Staggered so the palette rolls left-to-right on a theme change. Both the
+     duration and the delay are multiplied by --motion, so "Reduce motion" and
+     the OS setting collapse the whole sweep to an instant swap. */
+  transition: background-color calc(var(--motion) * .3s) ease,
+              box-shadow calc(var(--motion) * .3s) ease;
+}
+/* Order matches the type scale's accent order (t-h1..t-h4): pink, green, blue, purple. */
+.tc-lamps i:nth-child(1) { --lamp: var(--accent-pink); }
+.tc-lamps i:nth-child(2) { --lamp: var(--accent-green);  transition-delay: calc(var(--motion) * 50ms); }
+.tc-lamps i:nth-child(3) { --lamp: var(--accent-blue);   transition-delay: calc(var(--motion) * 100ms); }
+.tc-lamps i:nth-child(4) { --lamp: var(--accent-purple); transition-delay: calc(var(--motion) * 150ms); }
+
+/* --- the enhanced control (themes/dropdown.js) ---------------------------- */
+
+/* The open panel matches its ANCHOR's width, and the markup anchors it to the
+   console (data-dropdown-anchor) rather than to the button — so the panel spans the
+   cap and the lamps too, and the list gets the console's full width instead of
+   starting partway across it. That means this number no longer has to be
+   inflated to buy list width: the panel is this + the cap + the lamps (~139px).
+
+   It still has to hold a swatch, "Midnight Arcade (No Background) · Dark" and
+   the theme id without the primary line wrapping. Rows wrap rather than
+   ellipsis, so nothing in the list is ever truncated. It is also sized so the
+   longest name — "Midnight Arcade (No Background) · Light" — fits the CLOSED
+   trigger, which DOES ellipsize: the current selection is the one label always
+   on screen, so it should never be the one that gets cut. Measured, not
+   guessed. Re-measure if a theme with a longer name is added.
+
+   An explicit WIDTH, not a max-width or a flex-basis: the console shrink-wraps
+   to its content, and when sizing it the browser takes this item's max-content
+   contribution from the trigger's TEXT — a basis is treated as growable and a
+   max-width is never reached, so both leave it at ~165px. A definite width is
+   what actually reserves the space. min-width:0 still lets it shrink in the
+   two-row layout below. Includes the trigger's 11px of side padding. */
+.theme-console .dropdown {
+  flex: 0 1 auto; width: 316px; min-width: 0; align-self: stretch;
+}
+/* One palette notation in the header, not two. The component's default swatch is a
+   contiguous strip; the trigger beside it shows .tc-lamps, four dots, and reading a
+   row and then the trigger meant re-parsing the same four accents in two different
+   shapes. So the panel adopts the lamps' notation: same order (pink, green, blue,
+   purple — build-final.mjs emits data-dropdown-swatch in exactly that order), same
+   circles, same 5px rhythm, one size down for the row's smaller type.
+
+   The dot styling itself is NOT here — it lives in themes/dropdown.css as the
+   opt-in `data-dropdown-swatch-style="dots"`, which the header <select> carries.
+   It moved there when the gallery grew a card documenting this pattern: that card
+   also renders on discovery/draft-3/index.html, which never loads this file, so a
+   rule scoped to .theme-console could not reach it. Drop the attribute from the
+   markup to go back to the default strip. */
+
+/* Flat inside the console: the shell already draws the border, radius and glow,
+   so the trigger contributes only its text and caret.
+
+   The left padding matches the right and is load-bearing, not decoration: when
+   the trigger is expanded it tints its own background (below), and that tint
+   starts at the padding edge. At 0 that fill began exactly at the first letter,
+   so the name read as jammed against its own highlight. 11px matches the lamps'
+   own trailing padding, which lands the tint's leading edge exactly midway
+   between the last lamp dot and the text — a deliberate region, not a clip. */
+.theme-console .dropdown-toggle {
+  height: 100%; min-height: 0;
+  padding: 0 11px; gap: 8px;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  color: var(--text);
+}
+.theme-console .dropdown-toggle[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--accent-purple) 14%, transparent);
+  box-shadow: none;
+}
+/* The ring is drawn by the console (above), so the trigger must not draw its own. */
+.theme-console .dropdown-toggle:focus-visible { outline: none; box-shadow: none; }
+/* The console's caret is purple, not the component's blue. */
+.theme-console .dropdown-caret { color: var(--accent-purple); }
+
+/* The panel is position:fixed and in the top layer, so neither the console's
+   overflow:hidden nor the header's backdrop-filter can clip or re-anchor it —
+   which is exactly why this component was chosen for the header. */
+
+/* --- the native fallback (dropdown.js absent) ----------------------------- */
+
+.theme-console select {
+  -webkit-appearance: none; appearance: none;
+  flex: 1 1 auto; min-width: 0; max-width: 240px;
+  align-self: stretch; border: 0; background: transparent; outline: none;
+  padding: 0 6px 0 0; cursor: pointer;
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  color: var(--text);
+  text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+.theme-console select option { background: var(--bg-elevated); color: var(--text); }
+.theme-console select optgroup { background: var(--bg-elevated); color: var(--text-muted); }
+/* Same two-triangle caret the .select component draws, in the console's purple.
+   Only for the fallback — once enhanced, the component draws its own chevron. */
+.theme-console:not(:has(.dropdown))::after {
+  content: ""; flex: none; width: 10px; height: 5px; margin-right: 13px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--accent-purple) 50%),
+                    linear-gradient(135deg, var(--accent-purple) 50%, transparent 50%);
+  background-position: 0 0, 5px 0;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* =============================================================================
+   Responsive. Two rows below 1080px, in a 2-column grid that keeps the four
+   zones in DOM order:  brand | nav  /  motion | theme.
+   ============================================================================= */
+@media (max-width: 1080px) {
+  .hdr-inner {
+    display: grid; grid-template-columns: auto 1fr;
+    column-gap: 14px; row-gap: 8px; align-items: center;
+  }
+  .pagenav      { justify-self: end; margin-right: 0; }
+  .theme-console { justify-self: end; width: 100%; max-width: 340px; }
+  /* Two-row layout: the console is width-constrained, so the control goes back to
+     filling whatever the cap and lamps leave rather than reserving a fixed 330px. */
+  .theme-console select { max-width: none; }
+  .theme-console .dropdown { width: auto; flex: 1 1 auto; }
+
+  /* Dots one step down, same as .tc-lamps tighten below. Four circles at a 5px
+     rhythm are 43px wide where the strip they replaced was 28px, and the panel
+     narrows with the console here — measured, that extra 15px is exactly what
+     tips the two longest names onto a second line from 1000px down. 6/4 (36px)
+     is the largest rhythm that doesn't, so the notation survives the whole
+     range instead of being paid for in wrapped rows. */
+  .theme-console .dropdown-swatch { gap: 4px; }
+  .theme-console .dropdown-swatch > span { width: 6px; height: 6px; }
+}
+
+/* Phones: the lockup stacks, and the console's cap is the first thing to go. */
+@media (max-width: 620px) {
+  /* Flex-WRAP, not the grid above, and this is the one place the header stops
+     using a breakpoint to decide a layout.
+
+     The nav is pinned to the right of a 1fr track up there, so when its content
+     outgrows the track it does not push or scroll — it overflows LEFTWARD, under
+     the brand, and the two silently overlap with no scrollbar to report it. The
+     width where that starts is a function of the rendered font, not of the
+     viewport: --font-ui falls back "Trebuchet MS" -> "Segoe UI" -> Verdana, and
+     Verdana is wide enough to move the collision from ~311px to ~357px. Any px
+     breakpoint tuned on a Windows box is therefore wrong on the phones that
+     actually need it.
+
+     Wrapping asks the real question instead — "does this fit?" — so the nav
+     drops under the brand exactly when it must, on whatever font and at whatever
+     width, including ones nobody tested. Same reasoning as the footer index's
+     auto-fit grid. */
+  .hdr-inner {
+    /* padding-INLINE only. The vertical gutter is the clamp on the base rule and
+       is already tapering on its own by this width; a shorthand here would
+       silently overwrite it and put the 9px cliff back at 621px. */
+    padding-inline: 14px;
+    display: flex; flex-wrap: wrap; align-items: center;
+    column-gap: 10px; row-gap: 8px;
+  }
+
+  /* order slots ONLY the line break below into the sequence; 1,2,4,5 is DOM
+     order untouched, so tab order still matches reading order and the promise at
+     the top of this file holds. */
+  .brand         { order: 1; flex: none; }
+  .pagenav       { order: 2; flex: none; margin-right: 0; margin-left: auto; }
+
+  /* These two -8px are the price of the break line, and they are exact.
+     row-gap above buys the brand/nav gap when the nav wraps, but it is then also
+     charged on BOTH sides of the zero-height break, which would put 16px between
+     the two groups and make the rail 8px taller than it has always been. A
+     negative margin on the BREAK cannot fix that — Chrome floors a flex line's
+     cross size at 0, so the line just refuses to shrink. On the items it works,
+     because their line stays positive.
+
+     Both groups carry the SAME -8px, which is what keeps them aligned with each
+     other despite their different heights: for margin-top m in a line of cross
+     size L, an item's content centre lands at (L + m) / 2 — no h term, so every
+     item with the same m shares a centre line. Measured against the pre-flex
+     header, this reproduces its geometry to the pixel. */
+  .motion        { order: 4; flex: none; }
+  .motion,
+  .theme-console { margin-top: -8px; }
+  /* flex-basis 0, not auto, and width:auto to cancel the 1080px block's
+     width:100%. Both say the same thing: never let this control's CONTENT width
+     enter the line-breaking maths. Lines are broken on the basis BEFORE any
+     shrinking happens, so a content-sized console asks for ~316px, fails to fit
+     beside the motion switch under about 420px, and drops to a line of its own —
+     a fourth row on exactly the phones with the least height to spare. From 0 it
+     always fits, then grows into whatever the switch leaves, which is what the
+     1fr grid track used to do. */
+  .theme-console {
+    order: 5; flex: 1 1 0;
+    width: auto; min-width: 0; max-width: 340px; margin-left: auto;
+  }
+
+  /* The forced break that keeps the four zones in their two groups. Without it
+     the wrap is greedy and "Reduce motion" rides up beside the nav from ~520px,
+     which is a different header rather than a narrower one. A generated box, so
+     no markup changes and no extra node on either page — and it exists only
+     inside this query, since a ::before with no content generates nothing and
+     must not become a phantom cell in the grid above.
+
+     Zero height: the spacing around it is row-gap's job, and the double charge
+     that creates is cancelled on the two items above. */
+  .hdr-inner::before {
+    content: ""; order: 3; flex: 0 0 100%; height: 0;
+  }
+
+  /* flex-shrink is 0 on the nav (above), so it keeps its content width and the
+     line breaks instead of the pill being crushed. This is what makes the wrap
+     happen at all — a shrinkable nav would just get narrower and clip. */
+
+  .brand { gap: 9px; }
+
+  /* The lockup goes vertical. The wordmark is the half of the identity the two
+     A11Y Way sites SHARE; the descriptor is the half that differs — so on a
+     phone the descriptor is the last thing that should go, not the first.
+     Stacked, the brand takes the width of its longer line instead of the sum of
+     both, which is what buys the room to keep it. The two lines total ~26px:
+     the mark's own height, and inside the 28px .pagenav-seg already sets for
+     this row, so the header does not get taller. align-items must be restated —
+     the row lockup aligns on the baseline, and in a column that property is
+     suddenly the horizontal axis, which would centre the two lines on
+     each other instead of ranging them left. */
+  .brand-name {
+    flex-direction: column; align-items: flex-start;
+    gap: 2px; line-height: 1.05;
+    font-size: 16px;   /* wordmark, step 2 of the ladder up top */
+  }
+  /* A separator between two things side by side. Stacked, the line break is the
+     separator, and a leftover dot reads as a bullet. */
+  .brand-dot { display: none; }
+  /* The second line takes the console cap's voice — mono, small, tracked out,
+     muted (.tc-cap below) — so the header has ONE treatment for small labels
+     rather than two, and the descriptor reads as a deliberate sub-line of the
+     wordmark rather than as a word that wrapped. */
+  /* Tracking eases as the size grows — .16em was tuned for a 10px cap, and at
+     13px the same ratio reads loose rather than deliberate. It also buys back a
+     little of the width the larger wordmark costs. */
+  .brand-tag {
+    font-size: 13px; letter-spacing: .13em; text-transform: uppercase;
+  }
+
+  /* The nav's compact values cover this WHOLE range, rather than stepping again
+     at 430 the way the brand does. Two steps landing on one boundary is what
+     breaks this layout: at 430 the brand and the nav together wanted ~28px more
+     width in exchange for 1px of viewport, and with the Verdana fallback
+     431-446px could not pay it — those widths wrapped to three rows while 430px
+     stayed on two. Separating the steps leaves only the brand's 1px at 430,
+     which any width can afford. Costs 6px per pill between 431 and 620, where
+     there is slack to spare. */
+  .pagenav-seg { padding: 0 9px; font-size: 11px; letter-spacing: .05em; }
+  /* "Preview Themes" repeats the word the brand descriptor now carries a few
+     inches to its left, and it is the widest item on this row. CLIPPED, not
+     removed — the same reason .tc-cap below is clipped: the accessible name
+     stays "Preview Themes" at every width, so the target a screen reader
+     announces and a voice control user speaks never changes with the viewport,
+     only the number of words drawn. */
+  .seg-tail {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+  .tc-lamps { padding: 0 9px; gap: 4px; }
+  /* Second and last step down, for the same reason as the one at 1080px: at 29px
+     the four dots occupy what the old strip did, so no row wraps here that did
+     not wrap before the notation changed. Verified against the old bar at 480px
+     and 380px — identical wrap counts. Below ~340px every row wraps whatever
+     this is, so there is nothing further to buy. */
+  .theme-console .dropdown-swatch { gap: 3px; }
+  .theme-console .dropdown-swatch > span { width: 5px; height: 5px; }
+
+  /* The cap is HIDDEN, NOT REMOVED. It is the control's accessible name via
+     aria-labelledby, and a name that points at a display:none element resolves
+     to nothing — the trigger would announce as a bare button. Clipping keeps the
+     name intact at every width. */
+  .tc-cap {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+}
+
+/* Phones in portrait. One step down in type and gutters, and that is all — both
+   lines of the lockup stay. The mark and the wordmark are identical on the
+   component site; the descriptor is the only thing in this header that says
+   WHICH A11Y Way site you are on, so it is worth more than the pixels it costs.
+   Everything here is a step, not a switch: nothing appears or disappears
+   between 620px and 320px.
+
+   430px, not the 400px this used to be, and the number is load-bearing. It is
+   the widest phone in portrait (the iPhone Pro Max class), and this boundary
+   steps the brand AND the nav at once — about 28px of extra width arriving in
+   exchange for 1px of viewport. At 400 that overshot: with the Verdana fallback,
+   401-424px could not fit the wider pair on one line and wrapped to three rows,
+   while 390px stayed on two. A NARROWER viewport showing FEWER rows reads as a
+   bug, and it caught 414px, a real iPhone width. Measured both fallbacks: at 431
+   the step is affordable, so the discontinuity is gone rather than moved. Raise
+   the type here again and re-check this boundary first. */
+@media (max-width: 430px) {
+  .hdr-inner   { padding-inline: 12px; column-gap: 8px; }
+  .brand       { gap: 8px; }
+  .brand-mark  { width: 24px; height: 24px; }
+  /* Step 3 of the lockup ladder. Size on .brand-name, same carrier as the other
+     two steps, so there is one place to look for the wordmark's size. */
+  .brand-name  { font-size: 15px; }
+  .brand-title { letter-spacing: .09em; }
+  .brand-tag   { font-size: 12px; letter-spacing: .11em; }
+  /* No .pagenav-seg step here on purpose — the nav is already at its compact
+     size from 620px down (see the block above). This boundary steps the brand
+     alone, which is what keeps it affordable. */
+}
+
+/* =============================================================================
+   Windows High Contrast
+   ============================================================================= */
+
+/* Both palette indicators are painted with background-color alone, and HCM
+   replaces backgrounds with system colors — so the lamps and the panel's dots
+   would both go invisible, and the panel's dots would take the strip's border
+   with them. They are aria-hidden decoration, so nothing is announced either
+   way, but four rings still say "a palette lives here" the way the strip's box
+   used to. Outlines, not borders: they sit outside the box, so the geometry the
+   glow and the gap were tuned around is untouched. */
+@media (forced-colors: active) {
+  .tc-lamps i,
+  .theme-console .dropdown-swatch > span {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+  /* The halo is a blurred copy of a color that no longer exists here. */
+  .theme-console .dropdown-swatch > span::after { display: none; }
+}
