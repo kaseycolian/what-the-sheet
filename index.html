@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>What the Sheet</title>
+    <!-- Relative path, not "/src/…": that makes Vite treat the icon as a build
+         input, so it is emitted into dist/assets with a content hash and picks up
+         the GitHub Pages base automatically. A root-relative path would only work
+         from public/. -->
+    <link rel="icon" type="image/svg+xml" href="./src/assets/favicon-options/mark-sheet-funnel-soft-rim.svg" />
     <!-- Applies the saved/deep-linked theme before first paint (no flash).
          MUST stay an external script — inline scripts are blocked under strict CSP. -->
     <script src="/theme-init.js"></script>

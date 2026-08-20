@@ -1,13 +1,10 @@
-import type { SelectOption } from '../types';
+import type { DataRow, SelectOption } from '../types';
 
-export function getUniqueValues(
-  rows: Record<string, string>[],
-  header: string,
-): SelectOption[] {
+export function getUniqueValues(rows: DataRow[], header: string): SelectOption[] {
   const seen = new Set<string>();
 
   for (const row of rows) {
-    const cell = row[header] ?? '';
+    const cell = row.cells[header] ?? '';
     for (const segment of cell.split(',')) {
       const trimmed = segment.trim();
       if (trimmed) seen.add(trimmed);

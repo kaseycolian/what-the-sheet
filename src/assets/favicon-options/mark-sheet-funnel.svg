@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Sheet & Funnel" - option 3 nested inside option 2.
+
+       The header cap is thinned from 6.5 units to 5 so the funnel has room to sit
+       in the body without crowding it. The funnel clears the frame by 2.5 units on
+       each side and the cap by 3.5 above, so nothing pink ever meets anything blue.
+
+       Fallbacks are the default theme (Rink Classic), for standalone/favicon use
+       where page CSS never reaches the file. Shapes never touch a DIFFERENT
+       accent: accent-vs-accent contrast reaches 1.0:1 in some themes, so form is
+       carried by background gaps or by one token where two shapes meet. -->
+  <rect x="4.5" y="4" width="23" height="24" rx="4.5" fill="none"
+        stroke="var(--accent-blue, #3ceaff)" stroke-width="3"/>
+  <path d="M 4.5 9 V 8.5 A 4.5 4.5 0 0 1 9 4 H 23 A 4.5 4.5 0 0 1 27.5 8.5 V 9 Z"
+        fill="var(--accent-blue, #3ceaff)"/>
+  <path d="M 8.5 12.5 H 23.5 L 18 19.5 V 24 L 14 21.9 V 19.5 Z"
+        fill="var(--accent-pink, #ff2ec4)"/>
+</svg>

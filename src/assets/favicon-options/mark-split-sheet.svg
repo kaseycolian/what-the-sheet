@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Split Sheet" - the row-header column, and a dropdown in the body.
+
+       The filled left column is what makes a rounded rectangle read as a spreadsheet
+       rather than a card, and it costs only one shape. It is the same token as the
+       frame it meets, so their contact is never a contrast question.
+
+       Fallbacks are the default theme (Rink Classic), for standalone/favicon use
+       where page CSS never reaches the file. Shapes never touch a DIFFERENT
+       accent: accent-vs-accent contrast reaches 1.0:1 in some themes, so form is
+       carried by background gaps or by one token where two shapes meet. -->
+  <rect x="4.5" y="4" width="23" height="24" rx="4.5" fill="none"
+        stroke="var(--accent-blue, #3ceaff)" stroke-width="3"/>
+  <path d="M 4.5 8.5 A 4.5 4.5 0 0 1 9 4 H 12.5 V 28 H 9 A 4.5 4.5 0 0 1 4.5 23.5 Z"
+        fill="var(--accent-blue, #3ceaff)"/>
+  <path d="M 16 16.5 L 20 20.5 L 24 16.5" fill="none"
+        stroke="var(--accent-pink, #ff2ec4)" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

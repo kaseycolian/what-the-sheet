@@ -1,6 +1,45 @@
 /* .btn.btn-solid.a-pink supplies every color and state (hover / active /
-   focus-visible / disabled). This only stops the button stretching to the full
-   width of the column-flex .filterStack it sits in. */
+   focus-visible). This stops the button stretching to the full width of the
+   column-flex .filterStack it sits in, and overrides the disabled state — see
+   below. */
 .button {
   align-self: flex-start;
+}
+
+/* Disabled — a local override of the theme-service default, which drops the fill
+   to transparent and dims the whole button with opacity: 0.85. Two problems with
+   that: an outlined button does not read as "off" so much as "a different kind of
+   button", and the opacity drags every color down with it. Its border is also
+   --border, which measures 1.22:1 against the panel across the 17 palettes, so
+   the shape is barely there.
+
+   This replaces it with a grey wash. The fill is --text-muted mixed into the
+   panel, which is how you get a neutral in this token set: there is no grey to
+   reach for, but the muted text color carries each theme's own hue at low
+   saturation, so the result reads as that theme's grey rather than an imported
+   one. Measured worst case across all 17 palettes:
+
+       --text on the 35% fill      6.93:1   (AA text needs 4.5)
+       --border-strong on panel    3.49:1   (a shape needs 3.0)
+       fill against the pink it replaces  3.76:1
+
+   The label stays at full --text rather than --text-muted on purpose. Muted only
+   clears 4.5:1 when the fill is under about 15%, which is too faint to read as a
+   fill at all — so the disabled signal is carried by desaturation, the dead flat
+   surface and the cursor, not by making the words hard to read. WCAG exempts
+   disabled controls from contrast entirely; this ignores the exemption.
+
+   opacity is reset to 1 because the vendored 0.85 would scale all of the above
+   back down, and the numbers assume it is gone. */
+.button:disabled,
+.button[aria-disabled='true'] {
+  background: color-mix(in srgb, var(--text-muted) 35%, var(--bg-panel));
+  color: var(--text);
+  border-color: var(--border-strong);
+  opacity: 1;
+  box-shadow: none;
+  text-shadow: none;
+  filter: none;
+  transform: none;
+  cursor: not-allowed;
 }

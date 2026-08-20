@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Rimmed" - a squared shoulder before the taper begins.
+
+       Two and a half units of vertical rim at the top before the sides angle in. That
+       square shoulder is what most filter glyphs use and what a tornado never has -
+       it reads as a rim you pour into rather than a cone that narrows. The most
+       filter-like of the three, and the furthest from the original.
+
+       Cap thinned to y=7.5 (frame radius 3.5) so the funnel gains height. The
+       funnel clears the frame by 2 units each side and 3 above the base, so pink
+       never meets blue: accent against accent falls to 1.0:1 in some themes.
+       Hex fallbacks are the default theme, for standalone favicon use. -->
+  <rect x="4.5" y="4" width="23" height="24" rx="3.5" fill="none"
+        stroke="var(--accent-blue, #3ceaff)" stroke-width="3"/>
+  <path d="M 4.5 7.5 A 3.5 3.5 0 0 1 8 4 H 24 A 3.5 3.5 0 0 1 27.5 7.5 Z"
+        fill="var(--accent-blue, #3ceaff)"/>
+  <path d="M 8 9.5 H 24 V 12 L 18.5 17 V 23.5 L 13.5 21.5 V 17 L 8 12 Z"
+        fill="var(--accent-pink, #ff2ec4)"/>
+</svg>

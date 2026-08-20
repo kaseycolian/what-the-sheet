@@ -12,7 +12,8 @@
     "papaparse": "^5.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-select": "^5.10.1"
+    "react-select": "^5.10.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@types/papaparse": "^5.3.15",

@@ -43,6 +43,45 @@
    for headings inside .surface. */
 .brand-name { line-height: 1.15; }
 
+/* Centred, not the vendored `align-items: baseline`.
+
+   Baseline is the right default for the reference lockup, where the wordmark is
+   17px and the descriptor 13.5px — close enough that sitting them on a shared
+   baseline reads as one line of type. Ours carries .t-h1 at 28px, and across
+   that much size difference a shared baseline drops the dot and the descriptor
+   to the bottom of the wordmark's body: the three stop reading as centred on
+   each other, which is what the mark beside them is centred against.
+
+   Centring the boxes works here because every item takes its line-height from
+   the 1.15 above, so each box is proportional to its own type size and the
+   glyphs land near the middle of it.
+
+   NOTE: this must be re-asserted as flex-start in the <=620px block below. The
+   vendored file turns .brand-name into a column there, which makes align-items
+   the HORIZONTAL axis — and an unscoped `center` would range the stacked
+   wordmark and descriptor on their centres instead of down the left edge. */
+.brand-name { align-items: center; }
+
+/* Optical correction, 1px down.
+
+   align-items centres each item's LINE BOX, but where the glyphs sit inside that
+   box is decided by the font's own ascent/descent split — and the descriptor is
+   the one item in the lockup set in --font-mono rather than --font-ui. The mono
+   face carries proportionally more of its em above the baseline, so its caps land
+   slightly above the box centre while the wordmark's, in a different face, land
+   on it. Boxes aligned, glyphs not.
+
+   position: relative rather than a margin or a transform: it shifts the painted
+   glyphs without touching layout, so nothing around it reflows and the flex
+   centring it is correcting stays intact.
+
+   The real fix is cap-height alignment (text-box-trim / text-box-edge), which is
+   not portable enough to rely on yet. Revisit when it is, and delete this. */
+.brand-tag {
+  position: relative;
+  top: 1px;
+}
+
 /* The block gutter tapers sooner than the vendored clamp(13px, 2.2vw, 22px):
    this rail carries a 28px wordmark and goes to two rows at medium widths, so
    the vendored figure left too much air between them. Still a single continuous
@@ -74,6 +113,51 @@
    (0,1,1) and would beat .t-h1's (0,1,0), silently pinning the wordmark back to
    the lockup's inherited 17px. Margin reset only. */
 h1.brand-title { margin: 0; }
+
+/* The vendored .brand-mark is 26x26, and the comment above it in site-header.css
+   sets the lockup's wordmark at 17px. This app does not use that wordmark: the
+   <h1> carries .t-h1, which is 28px — two thirds taller than the size the 26px
+   mark was balanced against, which left the mark reading undersized beside it.
+
+   32px restores the proportion without matching it literally: 26 x (28/17) would
+   be about 43px, which stops being a mark and starts being a logo competing with
+   the words. 32 also lands the drawing 1:1 on its own 32-unit viewBox, so every
+   stroke sits on a whole pixel.
+
+   The glow and the hover lift stay the vendored rules — only the box changes. */
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  /* An <svg> is inline by default, which sits it on the text baseline and leaves
+     the font's descender space as a strip of air underneath. As a flex item it
+     should already be blockified, but declaring it costs nothing and makes the
+     element immune if it ever stops being one. */
+  display: block;
+}
+
+/* Tighter than the vendored 11px. Note this also replaces the vendored steps at
+   620px (9px) and 430px (8px): a single unscoped value here loads after all
+   three, and one gap at every width is right for this lockup, whose wordmark
+   does not step down either. */
+.brand { gap: 7px; }
+
+/* .07em, down from the vendored .13em.
+
+   Worth knowing which rule this is actually beating: .t-h1 also sets tracking
+   (2px), but components.css loads BEFORE site-header.css, so at equal
+   specificity the vendored .brand-title has been winning all along — .t-h1's
+   value never applied here. This rule takes over from that, and from the .09em
+   step the vendored file sets at 430px, for the same reason the gap above is
+   unscoped: the wordmark is 28px at every width, so its tracking should be too. */
+.brand-title { letter-spacing: .07em; }
+
+/* The vendored step here is 24px, scaled from a wordmark that also steps down at
+   this width. Ours does not: .t-h1 sets 28px on the element itself, which beats
+   the inherited size .brand-name steps, so the wordmark is 28px at every width.
+   The mark steps only for the room, not for the ladder — hence 28, not 24. */
+@media (max-width: 430px) {
+  .brand-mark { width: 28px; height: 28px; }
+}
 
 /* -----------------------------------------------------------------------------
    2. The controls cluster.
@@ -164,6 +248,12 @@ h1.brand-title { margin: 0; }
      at the size .t-h1 gives it rather than quietly shrinking it back. */
   .brand-name { white-space: normal; max-width: 100%; }
   .brand-title { overflow-wrap: break-word; max-width: 100%; }
+
+  /* Restores the vendored value, which the unscoped centring rule up top would
+     otherwise override in here. .brand-name is a COLUMN at this width, so
+     align-items is the horizontal axis: flex-start ranges the stacked wordmark
+     and descriptor down the left edge, centre would stack them on their middles. */
+  .brand-name { align-items: flex-start; }
   /* Allowing the wrap is not enough on its own: the vendored block sets
      `.brand { flex: none }`, so the lockup keeps its max-content width and the
      text never gets a narrower box to wrap into — it just overflows. It has to

@@ -1,31 +1,37 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
-import { parseCsv } from '../../utils/csvParser';
-import type { ParsedCSV } from '../../types';
+import { parseFiles } from '../../utils/parseFiles';
+import type { Workbook } from '../../types';
 import styles from './FileUpload.module.css';
 
 type Props = {
-  onFileParsed: (data: ParsedCSV) => void;
+  onFilesParsed: (workbook: Workbook) => void;
 };
 
-export function FileUpload({ onFileParsed }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+export function FileUpload({ onFilesParsed }: Props) {
   const [isDragging, setIsDragging] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState<string[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
 
-  async function handleFile(file: File) {
-    if (!file.name.endsWith('.csv')) {
-      setError('Please upload a .csv file.');
-      return;
-    }
-    setError(null);
-    setFileName(file.name);
+  async function handleFiles(files: File[]) {
+    if (files.length === 0) return;
     try {
-      const data = await parseCsv(file);
-      onFileParsed(data);
+      const { workbook, loadedFiles, errors: parseErrors } = await parseFiles(files);
+      setErrors(parseErrors);
+      if (workbook.sheets.length === 0) {
+        setLoaded([]);
+        if (parseErrors.length === 0) {
+          setErrors(['Nothing to load — no sheet had both headers and data rows.']);
+        }
+        return;
+      }
+      // Files, not sheet names: the drop zone reports what was handed over. What
+      // came out of it — the tabs — belongs to the filter below, not here.
+      setLoaded(loadedFiles);
+      onFilesParsed(workbook);
     } catch {
-      setError('Failed to parse CSV. Please check the file and try again.');
+      setLoaded([]);
+      setErrors(['Failed to read the files. Please check them and try again.']);
     }
   }
 
@@ -41,50 +47,79 @@ export function FileUpload({ onFileParsed }: Props) {
   async function onDrop(e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) await handleFile(file);
+    await handleFiles(Array.from(e.dataTransfer.files));
   }
 
   async function onChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) await handleFile(file);
+    await handleFiles(Array.from(e.target.files ?? []));
   }
 
   return (
     <div
       role="region"
-      aria-label="CSV drop zone"
+      aria-label="Spreadsheet drop zone"
       className={`${styles.zone} ${isDragging ? styles.dragging : ''}`}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <label className={`t-body ${styles.label}`} htmlFor="csv-input">
-        {fileName ? (
+      <p className={`t-body ${styles.prompt}`}>
+        {loaded.length > 0 ? (
           <span>
-            <strong>{fileName}</strong> loaded — drop or click to replace
+            <strong>
+              {loaded.length} file{loaded.length !== 1 ? 's' : ''}
+            </strong>{' '}
+            loaded — drop or choose files to replace
           </span>
         ) : (
-          <span>Drop a CSV file here, or click to browse</span>
+          <span>Drop CSV or Excel files here</span>
         )}
-      </label>
+      </p>
+
+      {/* The native control renders its button and its "no file chosen" text on
+          one line, and no CSS can separate them. So the input is taken out of the
+          visual flow and a <label> stands in as the button: clicking the label
+          still opens the picker, and the input keeps its own focus and keyboard
+          behaviour rather than having it reimplemented on a <div>.
+
+          Clipped rather than display:none — a hidden input is not focusable, which
+          would drop the control out of the tab order altogether. The focus ring is
+          drawn on the label by a sibling rule in the stylesheet, so the input has
+          to stay immediately before it. */}
       <input
         id="csv-input"
-        ref={inputRef}
         type="file"
-        accept=".csv"
-        aria-label="Upload CSV file"
+        multiple
+        accept=".csv,.xlsx,.xls,.xlsm,.xlsb"
         className={styles.input}
         onChange={onChange}
       />
-      {error && (
-        <p role="alert" className={`notice error ${styles.error}`}>
+      <label htmlFor="csv-input" className={`btn btn-solid a-blue ${styles.choose}`}>
+        Choose files
+      </label>
+
+      {loaded.length > 0 && (
+        <ul className={styles.fileList}>
+          {/* Keyed by position, not by name: selecting the same file twice in one
+              go is legal and yields two identical names, which would collide as
+              keys. The list is replaced wholesale on every upload and never
+              reordered, so the index is stable for as long as it exists. */}
+          {loaded.map((name, i) => (
+            <li key={`${i}-${name}`} className={`t-muted ${styles.fileName}`}>
+              {name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {errors.map((message, i) => (
+        <p key={`${i}-${message}`} role="alert" className={`notice error ${styles.error}`}>
           <span className="icon" aria-hidden="true">
             !
           </span>
-          {error}
+          {message}
         </p>
-      )}
+      ))}
     </div>
   );
 }

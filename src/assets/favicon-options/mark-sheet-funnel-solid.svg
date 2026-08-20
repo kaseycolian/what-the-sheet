@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Sheet & Funnel, solid" - the same idea as one filled shape.
+
+       The sheet is solid and the header row and funnel are knocked OUT of it in
+       the on-blue token, which the theme pairs with that accent - guaranteed 5.27:1
+       against it in every palette. One solid silhouette is the strongest read at
+       16px, where outlines start to break up.
+
+       Fallbacks are the default theme (Rink Classic), for standalone/favicon use
+       where page CSS never reaches the file. Shapes never touch a DIFFERENT
+       accent: accent-vs-accent contrast reaches 1.0:1 in some themes, so form is
+       carried by background gaps or by one token where two shapes meet. -->
+  <rect x="4.5" y="4" width="23" height="24" rx="4.5" fill="var(--accent-blue, #3ceaff)"/>
+  <rect x="9" y="8" width="14" height="2.5" rx="1.25" fill="var(--on-blue, #00212b)"/>
+  <path d="M 8.5 13.5 H 23.5 L 18 20 V 24.5 L 14 22.4 V 20 Z"
+        fill="var(--on-blue, #00212b)"/>
+</svg>

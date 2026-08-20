@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Sheet & Caret" — a spreadsheet with its header row, and a dropdown open
+       inside it.
+
+       The frame and the header cap are the SAME token on purpose. They touch, and
+       two different accents that touch can merge (accent-vs-accent falls to 1.0:1
+       in some themes); one token makes that contact a non-issue and reads as a
+       solid capped sheet. The caret is the only second color, and it floats in
+       the body with 7 units of background around it, so it can never merge with
+       the frame. -->
+
+  <!-- Sheet frame -->
+  <rect x="4.5" y="4" width="23" height="24" rx="4.5" fill="none"
+        stroke="var(--accent-blue, #3ceaff)" stroke-width="3"/>
+
+  <!-- Header row, capping the frame's top corners -->
+  <path d="M 4.5 10.5 L 4.5 8.5 A 4.5 4.5 0 0 1 9 4 L 23 4 A 4.5 4.5 0 0 1 27.5 8.5 L 27.5 10.5 Z"
+        fill="var(--accent-blue, #3ceaff)"/>
+
+  <!-- The open dropdown -->
+  <path d="M 11.5 17.5 L 16 22 L 20.5 17.5" fill="none"
+        stroke="var(--accent-pink, #ff2ec4)" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

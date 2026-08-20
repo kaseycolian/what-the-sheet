@@ -19,10 +19,26 @@ for any work on it — don't improvise, and don't re-apply from scratch.
 
 ## Applied configuration (current decisions on record)
 - Scope: **header and footer.**
-- Brand: **no brand mark, no favicon.** The lockup is the full three-part reference shape —
-  wordmark (`What the Sheet`) · separator dot · descriptor (`CSV Row Finder`) — with the wordmark
-  kept as a heading rather than a link because there is nowhere for a home link to go. The icon slot
-  is marked with a comment in `App.tsx` for the user to fill.
+- Brand: **mark and favicon both filled.** One drawing, shipped two ways, because the two contexts
+  need opposite things:
+  - **Header** — `src/components/BrandMark/BrandMark.tsx`, inline SVG in the DOM. Inline is the only
+    form that re-themes: an `<img>` is an isolated document the page's CSS never reaches, so its
+    `var()` references resolve to the hex fallbacks and the mark freezes on the default palette
+    while the rest of the header follows the theme selector.
+  - **Favicon** — `src/assets/mark-sheet-funnel-soft-rim.svg`, linked from `index.html` by a
+    *relative* path so Vite treats it as a build input and emits it with a content hash under the
+    Pages base. A root-relative path would only work from `public/`. This copy keeps
+    `var(--token, #fallback)` throughout, because standalone is exactly where the fallbacks render.
+  - Keep the two in step when the drawing changes — they are the same geometry by hand, not one
+    generated from the other.
+- Brand mark size: **32px, not the vendored 26px.** `site-header.css` sizes its mark against a 17px
+  wordmark; this app's `<h1>` carries `.t-h1` at 28px, which left 26px reading undersized. 32 also
+  lands the drawing 1:1 on its own 32-unit viewBox. The 430px step is 28px rather than the vendored
+  24px, because `.t-h1` sets the size on the element and so the wordmark does *not* step down there
+  — the mark steps for room, not to stay on a ladder.
+- Lockup: the full three-part reference shape — wordmark (`What the Sheet`) · separator dot ·
+  descriptor (`Spreadsheet Row Finder`) — with the wordmark kept as a heading rather than a link
+  because there is nowhere for a home link to go.
 - Page nav: **none.** Single-page app.
 - Rail: **sticky**, glass, with the `::after` lit tube.
 - Skip link: **added** — the one new string on the page (`Skip to content`), targeting `#main`.

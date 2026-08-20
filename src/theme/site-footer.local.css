@@ -5,10 +5,11 @@
    deviation lives here, so an update to site-footer.css stays a clean overwrite.
    Load it immediately AFTER site-footer.css.
 
-   This footer carries ONE item — the source link. The reference footer's two
-   zones (the brand lede and the cross-linked product index) are not used: this
-   app is not part of a product family and its identity is already stated in the
-   header, so restating it here would only add a second tab stop to nothing.
+   This footer carries TWO items — the SheetJS attribution notice on the left and
+   the source link on the right. The reference footer's own two zones (the brand
+   lede and the cross-linked product index) are still not used: this app is not
+   part of a product family and its identity is already stated in the header, so
+   restating it here would only add tab stops to nothing.
    ============================================================================= */
 
 /* Measure from the same tokens as .hdr-inner and <main>, so the source link
@@ -19,11 +20,22 @@
 .ftr-inner {
   max-width: var(--wts-content);
   padding-inline: var(--wts-gutter);
-  /* The vendored rule is `display: grid` with a 26px gap for its two zones. With
-     one child that gap has nothing to apply to; justify-items keeps the link at
-     its own width rather than stretching the grid item across the column, and
-     ends it against the same edge the theme console holds in the header. */
-  justify-items: end;
+  /* The vendored rule is `display: grid` with a 26px gap, which now has two real
+     zones to space. Alignment is set per child rather than with justify-items,
+     so the notice holds the left edge while the source link keeps the right one
+     — the same edge the theme console holds in the header. */
+  align-items: center;
+}
+
+.ftr-attrib { justify-self: start; }
+
+/* The vendored 3px margin-top nudges the link down to sit on the lede's first
+   baseline — but only above 1080px, where the vendored file leaves it set. In a
+   centered two-zone row there is no baseline to meet and the nudge just reads as
+   a 3px misalignment against the notice, so it goes at every width. */
+.ftr-src {
+  justify-self: end;
+  margin-top: 0;
 }
 
 /* Kept a touch tighter than the vendored 30/34, in the same spirit as the
@@ -34,12 +46,50 @@
   padding-block: 22px 26px;
 }
 
+/* The notice is a paragraph and the link is a single line, so they only share a
+   row once there is room for both: below this they stack, notice above link.
+   620px is where site-header.css makes its own first shape change, so the two
+   files stay in step. */
+@media (min-width: 620px) {
+  .ftr-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
 /* The vendored file splits .ftr-inner into two columns at 1080px — a 330px lede
-   beside a 1fr product index. With one child that first track became the whole
-   layout, so `justify-items: end` ended the link against the 330px track rather
-   than the content column. One zone, one column. */
+   beside a 1fr product index. Those tracks are sized for content this footer
+   does not carry: the 330px track would wrap the notice into a narrow block and
+   strand the link. Restated here so the shape above holds at every width. */
 @media (min-width: 1080px) {
   .ftr-inner {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
   }
+}
+
+/* Matches .ftr-src's 12.5px so the two zones read at the same optical size, and
+   .ftr-desc's muted treatment — this is a notice, not a call to action. The
+   links stay at full --text strength and underlined, so they are distinguished
+   from the surrounding text by more than color alone (SC 1.4.1). */
+.ftr-attrib {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.ftr-attrib a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.ftr-attrib a:hover { text-decoration-thickness: 2px; }
+
+.ftr-attrib a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: 2px;
 }

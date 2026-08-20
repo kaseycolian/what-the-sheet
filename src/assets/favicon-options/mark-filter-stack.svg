@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Filter Stack" — rows narrowing to the matches.
+
+       Every bar sits on the background with a gap above and below it, never
+       against another bar. That is deliberate: accent-vs-accent contrast falls to
+       1.0:1 in some themes, so two touching accents can merge into one shape.
+       Separated by background, each bar clears 4.77:1 in the worst theme and the
+       silhouette survives even where two of the three colors match in luminance.
+
+       Fallbacks are the default theme (Rink Classic), used when this file is
+       loaded standalone as a favicon, where page CSS never reaches it. -->
+  <rect x="4"    y="6"    width="24"  height="5" rx="2.5" fill="var(--accent-blue, #3ceaff)"/>
+  <rect x="8.25" y="13.5" width="15.5" height="5" rx="2.5" fill="var(--accent-purple, #b57fff)"/>
+  <rect x="12.5" y="21"   width="7"   height="5" rx="2.5" fill="var(--accent-pink, #ff2ec4)"/>
+</svg>

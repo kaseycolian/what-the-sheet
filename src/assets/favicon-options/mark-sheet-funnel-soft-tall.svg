@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Softened, tall" - the same shape with the stem run as long as the frame allows.
+
+       The cap is thinned again, to 7, by dropping the frame radius to 3. That buys a stem
+       of 8 units - nearly double the original. This is the limit: the stroke adds 0.7
+       below the path, leaving 1.3 units of clearance inside the frame's base.
+
+       The funnel is filled AND stroked in the same token with a round linejoin. That
+       is what softens the corners: the stroke rounds every join by half its width
+       without needing arc segments in the path, and using one token for both means
+       fill and outline can never disagree in any theme.
+
+       Clearances account for the stroke: it grows the shape by 0.7 units on every
+       side. Pink still never meets blue, since accent against accent falls to 1.0:1
+       in some themes. Hex fallbacks are the default theme, for favicon use. -->
+  <rect x="4.5" y="4" width="23" height="24" rx="3" fill="none"
+        stroke="var(--accent-blue, #3ceaff)" stroke-width="3"/>
+  <path d="M 4.5 7 A 3 3 0 0 1 7.5 4 H 24.5 A 3 3 0 0 1 27.5 7 Z"
+        fill="var(--accent-blue, #3ceaff)"/>
+  <path d="M 8.5 9.5 H 23.5 L 18 16.5 V 24.5 L 14 22.4 V 16.5 Z"
+        fill="var(--accent-pink, #ff2ec4)"
+        stroke="var(--accent-pink, #ff2ec4)" stroke-width="1.4"
+        stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

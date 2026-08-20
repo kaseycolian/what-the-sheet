@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Funnel" — the sheet's header row above, the filter below it.
+
+       Closest to the original concept, but reduced to the two shapes that still
+       read at 26px: everything in the first draft — grid lines, three dropdowns,
+       the pointer arrow — was drawn with 8px strokes on a 500-unit canvas, which
+       renders at roughly 0.6px in the header and disappears. Here the thinnest
+       part is the funnel stem at 5 units, about 4px as rendered.
+
+       The bar and the funnel are separated by 3.5 units of background rather than
+       touching, because accent-vs-accent contrast reaches 1.0:1 in some themes. -->
+
+  <!-- Header row -->
+  <rect x="3" y="5" width="26" height="5" rx="2.5" fill="var(--accent-blue, #3ceaff)"/>
+
+  <!-- Filter funnel -->
+  <path d="M 5.5 13.5 L 26.5 13.5 L 18.5 22.5 L 18.5 27.5 L 13.5 24 L 13.5 22.5 Z"
+        fill="var(--accent-pink, #ff2ec4)"/>
+</svg>

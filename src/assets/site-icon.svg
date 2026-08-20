@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" width="100%" height="100%">
+  <defs>
+    <clipPath id="sheetClipMain">
+      <rect x="50" y="60" width="280" height="220" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <!-- Spreadsheet Background Fill -->
+  <rect x="50" y="60" width="280" height="220" rx="12" fill="var(--bg-panel, #110620)"/>
+
+  <!-- Inner Fills Masked by ClipPath -->
+  <g clip-path="url(#sheetClipMain)">
+    <!-- Top Row -->
+    <rect x="50" y="60" width="280" height="50" fill="var(--accent-blue, #3ceaff)"/>
+    <!-- Left Col -->
+    <rect x="50" y="60" width="70" height="220" fill="var(--accent-blue, #3ceaff)"/>
+    <!-- Inner Lighter Cells -->
+    <rect x="120" y="110" width="210" height="170" fill="var(--bg-elevated, #1b0c30)"/>
+  </g>
+
+  <!-- Spreadsheet Grid Lines (drawn over the fill) -->
+  <rect x="50" y="60" width="280" height="220" rx="12" fill="none" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="50" y1="110" x2="330" y2="110" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="50" y1="165" x2="330" y2="165" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="50" y1="220" x2="330" y2="220" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+
+  <line x1="120" y1="60" x2="120" y2="280" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="190" y1="60" x2="190" y2="280" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="260" y1="60" x2="260" y2="280" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+
+  <!-- Arrow Path pointing to dropdowns -->
+  <path d="M 160 110 L 160 25 L 330 25 L 330 115" fill="none" stroke="var(--text, #f3ecff)" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+  <polygon points="315,100 345,100 330,125" fill="var(--text, #f3ecff)"/>
+
+  <!-- Filter Centered & Overlapping -->
+  <path d="M 110 110 L 210 110 L 175 160 L 175 220 L 145 205 L 145 160 Z" fill="var(--bg-panel, #110620)" stroke="var(--text, #f3ecff)" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Dropdown 1 -->
+  <rect x="250" y="140" width="160" height="50" rx="8" fill="var(--bg-panel, #110620)" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="275" y1="165" x2="315" y2="165" stroke="var(--text, #f3ecff)" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="370,155 390,155 380,175" fill="var(--text, #f3ecff)"/>
+
+  <!-- Dropdown 2 -->
+  <rect x="250" y="205" width="160" height="50" rx="8" fill="var(--bg-panel, #110620)" stroke="var(--text, #f3ecff)" stroke-width="8"/>
+  <line x1="275" y1="230" x2="315" y2="230" stroke="var(--text, #f3ecff)" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="370,220 390,220 380,240" fill="var(--text, #f3ecff)"/>
+</svg>

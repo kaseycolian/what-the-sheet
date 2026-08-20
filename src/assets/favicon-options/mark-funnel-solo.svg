@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="">
+  <!-- "Funnel" - one shape, nothing else.
+
+       At 26px a single bold silhouette outperforms any composition, and this is the
+       only mark here that stays unambiguous at 16px in a browser tab. The stem is 6
+       units - roughly 4.9px rendered - the heaviest thin-part of any option.
+
+       Fallbacks are the default theme (Rink Classic), for standalone/favicon use
+       where page CSS never reaches the file. Shapes never touch a DIFFERENT
+       accent: accent-vs-accent contrast reaches 1.0:1 in some themes, so form is
+       carried by background gaps or by one token where two shapes meet. -->
+  <path d="M 3.5 7 H 28.5 L 19 19 V 27.5 L 13 24 V 19 Z"
+        fill="var(--accent-pink, #ff2ec4)"/>
+</svg>

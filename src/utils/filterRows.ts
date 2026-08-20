@@ -1,16 +1,17 @@
-import type { FilterState, ReportResult } from '../types';
+import type { DataRow, FilterState, ReportResult } from '../types';
 
-function projectRow(
-  row: Record<string, string>,
-  columns: string[],
-): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const col of columns) out[col] = row[col] ?? '';
-  return out;
+function projectRow(row: DataRow, columns: string[]): DataRow {
+  const cells: Record<string, string> = {};
+  for (const col of columns) cells[col] = row.cells[col] ?? '';
+  return { sheet: row.sheet, cells };
 }
 
+/** `rows` must already be scoped to the selected tabs — the tab filter is an
+    AND that decides which rows exist at all, so out-of-scope rows belong in
+    neither result table. Within that scope the match is OR across every active
+    column filter, and OR again across a cell's comma-separated values. */
 export function filterRows(
-  rows: Record<string, string>[],
+  rows: DataRow[],
   filterState: FilterState,
   returnColumns: string[],
 ): ReportResult {
@@ -25,12 +26,12 @@ export function filterRows(
     };
   }
 
-  const inRows: Record<string, string>[] = [];
-  const notInRows: Record<string, string>[] = [];
+  const inRows: DataRow[] = [];
+  const notInRows: DataRow[] = [];
 
   for (const row of rows) {
     const matched = activeFilters.some(([header, selectedVals]) => {
-      const cell = row[header] ?? '';
+      const cell = row.cells[header] ?? '';
       const cellValues = cell
         .split(',')
         .map((s) => s.trim())
