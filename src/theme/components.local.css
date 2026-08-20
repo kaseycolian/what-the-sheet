@@ -1,0 +1,61 @@
+/* Local deviations from the vendored components.css, which is generated and is
+   never hand-edited. See THEME-SERVICE.md.
+
+   Everything here is one gap: components.css ships no
+   @media (forced-colors: active) block at all, and every state cue it draws is
+   built from color-mix(), opacity or a glow box-shadow — the three things
+   Windows High Contrast removes outright. Most controls degrade acceptably
+   because the platform forces their borders and backgrounds anyway. The rules
+   below are the ones that do not.
+
+   Scoped to what this app actually uses; the rest belongs upstream in the
+   theme-service, not in an app-local override. */
+
+@media (forced-colors: active) {
+  /* The switch's on state is `background: var(--accent-green)` on the track,
+     which forces to the same color as the off state — so the track alone stops
+     carrying the state (SC 1.4.1). The thumb's translateX survives, since
+     transforms are not forced, and it is the cue the a11y-library's switch
+     component names as the second one. This makes the track agree with it
+     rather than contradict it. */
+  .switch .track {
+    border: 1px solid ButtonBorder;
+    background: ButtonFace;
+  }
+
+  .switch .thumb {
+    background: ButtonText;
+  }
+
+  .switch input:checked + .track {
+    border-color: Highlight;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .switch input:checked + .track .thumb {
+    background: HighlightText;
+  }
+
+  /* A notice's tone is border-color plus a tinted fill, and both flatten. The
+     text carries the tone in words, which is why this only needs the box back:
+     without an explicit border the notice loses its edge entirely and reads as
+     a loose paragraph. */
+  .notice {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    text-shadow: none;
+  }
+
+  /* The universal ring's box-shadow half is dropped; the outline half is
+     forced to a system color already. Restated so the ring keeps a color that
+     is guaranteed to contrast with whatever the control became. */
+  :is(.btn, .btn-icon, .drop-toggle, .tab, .chip-toggle):focus-visible,
+  .input:focus-visible,
+  .textarea:focus-visible,
+  .select:focus-visible,
+  .switch input:focus-visible + .track {
+    outline-color: CanvasText;
+  }
+}

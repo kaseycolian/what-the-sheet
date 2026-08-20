@@ -1,9 +1,27 @@
-/* .btn.btn-solid.a-pink supplies every color and state (hover / active /
-   focus-visible). This stops the button stretching to the full width of the
-   column-flex .filterStack it sits in, and overrides the disabled state — see
-   below. */
+/* The button and the reason it is off, as one block. align-self moved here from
+   .button when the hint was added — the wrapper is now the flex child of the
+   column-flex .filterStack, and without it the pair would stretch full width. */
+.wrap {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 .button {
   align-self: flex-start;
+}
+
+/* .t-muted owns the color. No max-width and no fixed height, so the SC 1.4.12
+   text-spacing overrides cannot clip it.
+
+   12px, matching .requiredKey at the top of the panel: both are the panel's
+   quiet voice — one explains the asterisks, this one explains why the button is
+   off — and two different sizes for the same job reads as an accident. Keep
+   them in step. */
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
 }
 
 /* Disabled — a local override of the theme-service default, which drops the fill
@@ -30,9 +48,17 @@
    disabled controls from contrast entirely; this ignores the exemption.
 
    opacity is reset to 1 because the vendored 0.85 would scale all of the above
-   back down, and the numbers assume it is gone. */
+   back down, and the numbers assume it is gone.
+
+   :hover and :active are listed explicitly now that the button is soft-disabled.
+   components.css guards its state rules with :not(:disabled), which an
+   aria-disabled button passes — so .btn-solid:hover would otherwise brighten a
+   button that does nothing. Those guards are (0,3,0); matching that specificity
+   here and winning on source order is what holds the flat surface. */
 .button:disabled,
-.button[aria-disabled='true'] {
+.button[aria-disabled='true'],
+.button[aria-disabled='true']:hover,
+.button[aria-disabled='true']:active {
   background: color-mix(in srgb, var(--text-muted) 35%, var(--bg-panel));
   color: var(--text);
   border-color: var(--border-strong);
@@ -42,4 +68,31 @@
   filter: none;
   transform: none;
   cursor: not-allowed;
+}
+
+/* The focus ring has to survive the reset above — that is the whole point of
+   soft-disabling, since the button is now a tab stop (SC 2.4.7). Restated
+   verbatim from the universal ring in components.css, because the box-shadow
+   half of it is what `box-shadow: none` up there would otherwise remove. */
+.button[aria-disabled='true']:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--focus-ring) 30%, transparent);
+}
+
+/* Forced colors drops the color-mix fill, so the disabled state loses its only
+   cue and the button looks live. GrayText is the system color that means
+   exactly this, and it is the one case where it is the right answer. */
+@media (forced-colors: active) {
+  .button:disabled,
+  .button[aria-disabled='true'],
+  .button[aria-disabled='true']:hover {
+    border-color: GrayText;
+    color: GrayText;
+    background: ButtonFace;
+  }
+
+  .button[aria-disabled='true']:focus-visible {
+    outline-color: CanvasText;
+  }
 }

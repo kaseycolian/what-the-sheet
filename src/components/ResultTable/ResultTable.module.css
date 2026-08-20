@@ -87,3 +87,32 @@
 .tr:last-child .td {
   border-bottom: none;
 }
+
+/* The wrapper is a declared tab stop (see ResultTable.tsx), so it owes a
+   visible ring. Inset, because the wrapper is the scroll container itself and
+   a positive offset on a scrolled box is exactly what gets clipped. */
+.tableWrapper:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+
+/* Forced colors drops every color-mix tint, so the zebra striping and the row
+   hover both disappear and the rows run together. The zebra is decoration and
+   is let go; hover is a pointer cue and is redrawn in system colors. Borders
+   are forced by the platform, so the grid itself survives untouched. */
+@media (forced-colors: active) {
+  .tr:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* The two headings are told apart by --accent-green vs --accent-pink, which
+     forced colors flattens to one color. The text-shadow glow goes with it, so
+     without this the pair reads as one repeated heading; the row count in each
+     name is then the only thing separating them, which is enough. */
+  .in,
+  .out {
+    color: CanvasText;
+    text-shadow: none;
+  }
+}

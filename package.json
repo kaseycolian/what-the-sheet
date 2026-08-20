@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:a11y": "playwright test"
   },
   "dependencies": {
     "papaparse": "^5.5.3",
@@ -16,6 +17,8 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@types/papaparse": "^5.3.15",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.4",

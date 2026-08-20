@@ -10,6 +10,7 @@ import './theme/site-header.css';
 import './theme/site-header.local.css';
 import './theme/site-footer.css';
 import './theme/site-footer.local.css';
+import './theme/components.local.css';
 import './index.css';
 import App from './App';
 

@@ -108,6 +108,22 @@ export default function App() {
 
   const hasActiveFilters = Object.values(filterState).some((v) => v.length > 0);
 
+  /* Named rather than merely counted, because this is what the Get Report
+     button announces and shows while it is off — "disabled" on its own leaves
+     the person to work out which of three conditions is unmet. */
+  const missing = useMemo(() => {
+    const parts: string[] = [];
+    if (selectedTabs.length === 0) parts.push('at least one tab');
+    if (!hasActiveFilters) parts.push('at least one filter value');
+    if (returnColumns.length === 0) parts.push('at least one column to display');
+    return parts;
+  }, [selectedTabs.length, hasActiveFilters, returnColumns.length]);
+
+  const disabledReason =
+    missing.length === 0
+      ? undefined
+      : `Select ${missing.slice(0, -1).join(', ')}${missing.length > 1 ? ' and ' : ''}${missing[missing.length - 1]} to run a report.`;
+
   const handleGetReport = useCallback(() => {
     if (!workbook) return;
     const result = filterRows(scopedRows, filterState, returnColumns);
@@ -171,10 +187,21 @@ export default function App() {
           <>
             <section className={`panel ${styles.card}`} aria-label="Filter configuration">
               <div className={styles.filterStack}>
+                {/* SC 3.3.2. The asterisk is a convention, not self-explanatory,
+                    so the panel says what it means once.
+
+                    The * here is real text, unlike the aria-hidden ones on the
+                    labels — this sentence is where the character has to be
+                    readable, because it is the thing being defined. */}
+                <p className={`t-muted ${styles.requiredKey}`}>
+                  Fields marked with * are required.
+                </p>
+
                 <MultiSelectField
                   inputId="tab-selector"
                   label="Tabs"
-                  ariaLabel="Select tabs to search"
+                  itemsLabel="tabs"
+                  required
                   options={tabOptions}
                   selectedValues={selectedTabs}
                   placeholder="Select tabs to search…"
@@ -184,7 +211,8 @@ export default function App() {
                 <MultiSelectField
                   inputId="header-selector"
                   label="Filter by headers"
-                  ariaLabel="Select headers to filter by"
+                  itemsLabel="header filters"
+                  required
                   options={headerOptions}
                   selectedValues={selectedHeaders}
                   placeholder="Select headers to filter by…"
@@ -201,7 +229,8 @@ export default function App() {
                 <MultiSelectField
                   inputId="return-cols"
                   label="Columns to display in results"
-                  ariaLabel="Select columns to display in results"
+                  itemsLabel="result columns"
+                  required
                   options={headerOptions}
                   selectedValues={returnColumns}
                   placeholder="Select columns to display…"
@@ -210,11 +239,8 @@ export default function App() {
 
                 <GetReportButton
                   onClick={handleGetReport}
-                  disabled={
-                    selectedTabs.length === 0 ||
-                    !hasActiveFilters ||
-                    returnColumns.length === 0
-                  }
+                  disabled={missing.length > 0}
+                  reason={disabledReason}
                 />
               </div>
             </section>

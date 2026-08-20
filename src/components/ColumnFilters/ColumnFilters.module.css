@@ -18,3 +18,13 @@
   grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 1.25rem;
 }
+
+/* Matches the asterisk on the single fields (MultiSelectField.module.css) —
+   same inherited color, same size bump, so the two marks read as one
+   convention. Kept local rather than shared because the two live in different
+   modules and a shared class would mean a third stylesheet for four lines. */
+.required {
+  margin-inline-start: 0.3em;
+  font-size: 1.15em;
+  line-height: 1;
+}

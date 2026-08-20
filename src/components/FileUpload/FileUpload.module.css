@@ -73,3 +73,36 @@
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+
+/* The live region. It is rendered on every pass and is empty most of the time,
+   which is the point — a region only announces what changes inside it while it
+   is being observed. No display rule that could remove it from the tree, and no
+   min-height: an empty region is 0px tall and that is correct. */
+.status {
+  display: block;
+}
+
+/* Forced colors drops every color-mix() fill and every box-shadow, so all three
+   of the zone's states — rest, hover/focus, dragging — collapse onto the same
+   forced background and the border color is flattened too. The states are
+   redrawn here with the two things forced colors leaves alone: border STYLE and
+   border width. Note the dashed rest state is what makes this legible at all;
+   solid-and-thick is what "armed for a drop" becomes. */
+@media (forced-colors: active) {
+  .zone {
+    border-style: dashed;
+    border-color: ButtonBorder;
+    background: Canvas;
+  }
+
+  .zone:hover,
+  .zone:focus-within {
+    border-color: CanvasText;
+  }
+
+  .dragging,
+  .dragging:hover {
+    border-style: solid;
+    border-color: Highlight;
+  }
+}

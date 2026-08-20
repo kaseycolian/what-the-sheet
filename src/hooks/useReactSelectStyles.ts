@@ -18,6 +18,14 @@ const selectStyles: StylesConfig<SelectOption, true> = {
     boxShadow: state.isFocused
       ? '0 0 0 3px color-mix(in srgb, var(--focus-ring) 45%, transparent)'
       : 'none',
+    /* react-select's own base is `transition: all 100ms`, a fixed duration that
+       neither prefers-reduced-motion nor the app's motion switch can reach —
+       it is emitted by emotion, not by a stylesheet. --dur is
+       calc(var(--motion) * 0.15s) and --motion is zeroed by BOTH routes in
+       effects.css, so naming the token here gates this the same way every other
+       transition in the app is gated. */
+    transition:
+      'border-color var(--dur) ease, box-shadow var(--dur) ease, background var(--dur) ease',
     '&:hover': { borderColor: 'var(--accent-blue)' },
   }),
   menu: (base) => ({
@@ -52,25 +60,19 @@ const selectStyles: StylesConfig<SelectOption, true> = {
     borderRadius: 'var(--radius-sm)',
   }),
   multiValueLabel: (base) => ({ ...base, color: 'var(--text)', fontWeight: 600 }),
-  multiValueRemove: (base) => ({
-    ...base,
-    color: 'var(--text)',
-    ':hover': {
-      backgroundColor: 'color-mix(in srgb, var(--accent-pink) 38%, var(--bg-panel))',
-      color: 'var(--text)',
-    },
-  }),
+  /* No multiValueRemove or clearIndicator entry. Both controls are overridden
+     in MultiSelectField to be real <button>s, and those overrides drop
+     react-select's emotion `css` prop — a rule here would be dead code. They
+     are styled in MultiSelectField.module.css instead. */
   placeholder: (base) => ({ ...base, color: 'var(--text-muted)' }),
   singleValue: (base) => ({ ...base, color: 'var(--text)' }),
   input: (base) => ({ ...base, color: 'var(--text)' }),
   dropdownIndicator: (base) => ({
     ...base,
     color: 'var(--text-muted)',
-    ':hover': { color: 'var(--accent-blue)' },
-  }),
-  clearIndicator: (base) => ({
-    ...base,
-    color: 'var(--text-muted)',
+    // Same reason as the control above: react-select's base is a fixed
+    // `color 150ms`, which no motion preference can reach.
+    transition: 'color var(--dur) ease',
     ':hover': { color: 'var(--accent-blue)' },
   }),
   indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--border)' }),

@@ -163,3 +163,99 @@ their provider instead, and it is `DOMContentLoaded`-gated so it would find no `
   one `contentinfo`, keyboard-reachable link with a visible ring, 32px target height (SC 2.5.8),
   no unrequested new tab, right edge aligned with the console and the panels at 320-1600px, and
   336 contrast pairs at AA.
+- `2026-08-20` — Accessibility pass across the whole app, against the `a11y-library` skill, plus a
+  Playwright + axe harness (`npm run test:a11y`, `tests/a11y.spec.mjs`) that runs the checks from
+  its `verify.md`. What it found and what changed:
+  - **The chip remove control was mouse-only.** react-select ships it as `<div role="button">` with
+    no `tabindex` and no key handler — its `removeProps` carry `onClick` / `onTouchEnd` /
+    `onMouseDown` only — and the one keyboard route it does offer, Backspace, pops the *last* value.
+    Removing a chosen chip was unreachable: **SC 2.1.1**. Replaced with a real `<button>` named by
+    `aria-labelledby` pointing at a clipped "Remove" plus the chip's own `rs__multi-value__label`,
+    so both halves of the name are text a translator can see. The group is a **roving tabindex**:
+    one tab stop however many chips there are, arrows and Home/End move within, Enter/Space and
+    Delete/Backspace remove. `stopPropagation` on every key it consumes, or react-select's own
+    container handler opens the menu underneath. Focus after a removal is moved deliberately — left
+    alone it falls to `<body>` and the next Tab restarts at the top of the page.
+  - **Clear-all was invisible and unreachable.** react-select's `ClearIndicator` is a `<div>`
+    carrying `aria-hidden="true"` and a mousedown handler. Now a real `<button>` with clipped text
+    ("Clear all header filters"), named from a separate `itemsLabel` prop because several visible
+    labels are phrased as instructions and "Clear all Filter by headers" is not a sentence.
+  - **Two names on one control.** Every field had both a visible `<label>` and an `aria-label`,
+    and the `aria-label` wins — so "Filter by headers" announced as "Select headers to filter by",
+    a **SC 2.5.3** failure since the visible string was not contained in the name. The
+    `ariaLabel` prop is gone; the visible label is the name.
+  - **Three live regions that never announced.** `pitfalls.md`: a region only announces what
+    changes *inside it while it is being observed*. FileUpload's `<p role="alert">` and
+    ResultTable's `<p role="status">` were both mounted with their text already in place. Replaced
+    with one always-present, empty `role="status"` container per component; a successful upload now
+    announces "Loaded 2 files: …" (names included, because the same count twice running is one
+    state and stays silent).
+  - **The table's scroll wrapper was a silent tab stop.** Chromium hands one to any user-scrollable
+    box with no role, no name and its own 1px hairline ring; Safari hands out none. Declared
+    `tabindex="0" role="region" aria-labelledby` with a real ring, per `data-table.md`. The
+    wrapping `<section>` gave up its `aria-labelledby` in exchange — two regions with the same name
+    is `landmark-unique`, which axe caught.
+  - **SC 2.4.11 across the page.** The rail is sticky and the browser's scroll-into-view aligns a
+    focused element's *top* edge, so anything reached backwards lands under it. `ResultTable`'s
+    heading already carried `scroll-margin-top`; it is now a zero-specificity `:where()` rule on
+    everything focusable, off the existing `--wts-rail-h`.
+  - **SC 2.5.8.** The chip remove was 22x22 and react-select's combobox input is 4px wide while
+    empty (axe: `target-size`). Both now clear 24 in both dimensions.
+  - **Motion.** react-select emits `transition: all 100ms` and `color 150ms` from emotion, which
+    neither `prefers-reduced-motion` nor the in-page switch can reach. Both now read `var(--dur)`,
+    which is `calc(var(--motion) * 0.15s)` and is zeroed by both routes.
+  - **Forced colors.** The app's own CSS had no `@media (forced-colors: active)` block anywhere, so
+    the drop zone's drag state, the disabled button's grey wash, the table hover, the dialog's
+    elevation and every chip tint disappeared in Windows High Contrast. Each module now has one;
+    react-select needs `!important` in a plain stylesheet, because emotion injects single-class
+    rules at runtime and the tie is broken by injection order. See `THEME-SERVICE.md` for the
+    matching gap in the vendored `components.css`.
+  - **Get Report is soft-disabled.** `aria-disabled` plus `aria-describedby` naming what is
+    missing, instead of `disabled` — which removes the button from the tab order and answers
+    nothing. The measured grey wash is unchanged; it already targeted `[aria-disabled='true']`.
+  - Also: the drop zone demoted from `role="region"` to `role="group"` (it sat inside a
+    near-identically-named `<section>`), and the dead `id="csv-input"` removed.
+
+  Verified by `npm run test:a11y` — 12 checks, all passing: axe over `wcag2a/aa`, `wcag21a/aa`,
+  `wcag22aa` and `best-practice`; `color-contrast` in all 17 themes plus auto in both modes; no
+  positive tabindex; every tab stop reachable and indicated (the ring is allowed to be drawn on an
+  ancestor, which is how both react-select and the theme console do it); nothing left under the
+  rail; every pointer target over 24x24; both reduced-motion routes; forced colors actually
+  repainting; no sideways scroll at 320px; and the chip and clear-all keyboard paths end to end.
+- `2026-08-20` — Enter now opens a focused combobox. react-select's key handler falls straight
+  through for Enter while the menu is closed (`case 'Enter': if (menuIsOpen) {…} return;`), so it
+  was a dead key: ArrowDown, ArrowUp and Space all opened the list and the key most people reach
+  for first did nothing, which reads as broken. Handled through react-select's own `onKeyDown`
+  prop, which it calls before its handler and then honours `defaultPrevented`. Guarded three ways
+  — only while the menu is closed, only from the text input (the clear-all button does not stop
+  Enter, and clearing should not also open the menu), and never mid-IME-composition, where Enter
+  commits a candidate rather than being a press. Nothing was given up: the arrows and Space still
+  open it, and Enter still selects the focused option once open. The APG's editable-combobox
+  pattern only requires the arrows, so this is a superset of it. Asserted in `tests/a11y.spec.mjs`
+  across all four open keys plus Escape, and for Enter still selecting when the menu is open.
+- `2026-08-20` — Required fields marked. Each required field carries an asterisk on its label and
+  `aria-required` on its combobox — both, because an asterisk alone is decoration nobody hears and
+  `aria-required` alone is a state nobody sees. The asterisk is `aria-hidden` and takes no color of
+  its own, inheriting `.field-label`'s validated `--accent-green` / `--accent-purple` so it clears
+  AA in all 17 palettes without a measurement of its own. A one-line key above the fields explains
+  the convention (SC 3.3.2): "Fields marked with * are required." The asterisk in that sentence is
+  real text, unlike the aria-hidden ones on the labels — it is the character being defined, so it
+  has to be readable there.
+
+  Three details worth keeping:
+  - **Not react-select's `required` prop.** It also mounts a hidden `<input required>` across the
+    bottom of the control for native form validation. There is no `<form>` on this page for that to
+    serve, and the element is a full-width, non-hidden input around 21px tall that the target-size
+    sweep has every reason to report. A `components.Input` override adds the attribute and nothing
+    else.
+  - **The mark is on the Column Filters *group*, not on each column select.** Get Report needs a
+    value in at least one filter, not in every one; an asterisk per select would state the opposite.
+    There is no `aria-required` for a group, so the legend carries clipped text and the fieldset's
+    name becomes "Column Filters (at least one value required)".
+  - **Parenthesised, not comma-led.** accname inserts a separator between a node's children, so
+    clipped text beginning ", at least" computed as "Column Filters **,** at least one value
+    required" — an audible space before the comma, with no way to close it while the phrase is its
+    own element. Caught by the suite, not by reading the markup.
+
+  No per-field error messages: the Get Report button already carries one description naming
+  everything still missing, and a second copy under each field would say the same thing three times.

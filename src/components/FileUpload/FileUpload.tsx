@@ -21,6 +21,12 @@ export function FileUpload({ onFilesParsed }: Props) {
   const [confirming, setConfirming] = useState(false);
   const [loaded, setLoaded] = useState<string[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
+  /* Announced, not shown: the file count and names are already on screen in the
+     prompt and the list below. The names are included because the region only
+     speaks when its text CHANGES — "3 files loaded" twice running is one state
+     and stays silent, where naming the files makes a genuinely new upload read
+     as one. */
+  const [announcement, setAnnouncement] = useState('');
 
   async function handleFiles(files: File[]) {
     if (files.length === 0) return;
@@ -29,6 +35,7 @@ export function FileUpload({ onFilesParsed }: Props) {
       setErrors(parseErrors);
       if (workbook.sheets.length === 0) {
         setLoaded([]);
+        setAnnouncement('');
         if (parseErrors.length === 0) {
           setErrors(['Nothing to load — no sheet had both headers and data rows.']);
         }
@@ -37,9 +44,13 @@ export function FileUpload({ onFilesParsed }: Props) {
       // Files, not sheet names: the drop zone reports what was handed over. What
       // came out of it — the tabs — belongs to the filter below, not here.
       setLoaded(loadedFiles);
+      setAnnouncement(
+        `Loaded ${loadedFiles.length} file${loadedFiles.length !== 1 ? 's' : ''}: ${loadedFiles.join(', ')}`,
+      );
       onFilesParsed(workbook);
     } catch {
       setLoaded([]);
+      setAnnouncement('');
       setErrors(['Failed to read the files. Please check them and try again.']);
     }
   }
@@ -115,8 +126,12 @@ export function FileUpload({ onFilesParsed }: Props) {
   }
 
   return (
+    /* role="group", not "region". This sits inside <section aria-label="File
+       upload"> in App.tsx, and two nested landmarks with near-identical names
+       is a landmark list that says the same thing twice. The outer one is the
+       page's landmark; this is just the cluster of controls inside it. */
     <div
-      role="region"
+      role="group"
       aria-label="Spreadsheet drop zone"
       className={`${styles.zone} ${isDragging ? styles.dragging : ''}`}
       onDragOver={onDragOver}
@@ -143,9 +158,10 @@ export function FileUpload({ onFilesParsed }: Props) {
           the button is the control now, and two tab stops for one job is worse
           than none. No aria-expanded on it either — a modal moves the user
           inside it, so there is nothing to report from out here. */}
+      {/* No id: nothing has referenced it since the trigger stopped being a
+          <label>. */}
       <input
         ref={inputRef}
-        id="csv-input"
         type="file"
         multiple
         tabIndex={-1}
@@ -176,14 +192,22 @@ export function FileUpload({ onFilesParsed }: Props) {
         </ul>
       )}
 
-      {errors.map((message, i) => (
-        <p key={`${i}-${message}`} role="alert" className={`notice error ${styles.error}`}>
-          <span className="icon" aria-hidden="true">
-            !
-          </span>
-          {message}
-        </p>
-      ))}
+      {/* One region, rendered on every pass and empty until there is something
+          to say. The role belongs on this container and not on the notices
+          inside it: an element only announces what changes while it is being
+          observed, so a <p role="alert"> mounted with its message already in
+          place had never changed and announced nothing. */}
+      <div role="status" className={styles.status}>
+        {announcement && <p className="visually-hidden">{announcement}</p>}
+        {errors.map((message, i) => (
+          <p key={`${i}-${message}`} className={`notice error ${styles.error}`}>
+            <span className="icon" aria-hidden="true">
+              !
+            </span>
+            {message}
+          </p>
+        ))}
+      </div>
 
       <ConfirmDialog
         open={confirming}

@@ -72,3 +72,14 @@
   gap: 2rem;
   padding: 1.5rem;
 }
+
+/* .t-muted owns the color. Sits above the fields rather than below them,
+   because a key that explains a mark has to be read before the mark is met. */
+.requiredKey {
+  margin: 0 0 -0.25rem;
+  /* 12px, shared with the Get Report hint (GetReportButton.module.css) — both
+     are the panel's quiet voice and should stay in step. Not below 12px, which
+     is where a muted color starts costing legibility that SC 1.4.3's ratio does
+     not measure. */
+  font-size: 0.75rem;
+}

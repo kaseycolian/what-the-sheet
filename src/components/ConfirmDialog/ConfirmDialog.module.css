@@ -51,3 +51,24 @@
   gap: 0.6rem;
   margin-top: 0.35rem;
 }
+
+/* Forced colors drops the elevation shadow and flattens the dialog onto the
+   same forced background as the page behind it, so the one thing separating a
+   modal from the document — that it sits on top of it — stops being visible.
+   The border is redrawn explicitly, and the backdrop takes a system color so
+   the page underneath still reads as covered.
+
+   The fade is left alone: animations are not forced, and it already collapses
+   to 0s under reduce-motion. */
+@media (forced-colors: active) {
+  .dialog {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+
+  .dialog::backdrop {
+    background: Canvas;
+  }
+}

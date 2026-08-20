@@ -24,7 +24,12 @@ export function ResultTable({
   tableRef,
 }: Props) {
   return (
-    <section className={styles.section} aria-labelledby={id}>
+    /* Deliberately unnamed. A <section> only becomes a region landmark once it
+       has an accessible name, and naming this one from the heading gave the
+       page two regions with identical names — this and the scroll wrapper
+       below, which needs the name far more (axe: landmark-unique). The heading
+       is what carries the structure here; the landmark is the table's. */
+    <section className={styles.section}>
       <h2
         id={id}
         ref={tableRef}
@@ -36,11 +41,27 @@ export function ResultTable({
       </h2>
 
       {rows.length === 0 ? (
-        <p role="status" className={`t-muted ${styles.empty}`}>
-          No results.
-        </p>
+        /* No role="status" here. A live region only announces what changes
+           inside it while it is being observed, and this paragraph is inserted
+           with its text already in place — so the role announced nothing and
+           only added a region to the tree. The empty case is already carried
+           twice over: the heading takes focus when a report runs, and its own
+           name ends "(0 rows)". */
+        <p className={`t-muted ${styles.empty}`}>No results.</p>
       ) : (
-        <div className={`fx-scroll ${styles.tableWrapper}`}>
+        /* The scroll wrapper is a tab stop whether or not one is declared:
+           Chromium hands a free one to any user-scrollable box, with no role,
+           no name, and the UA's own 1px hairline ring — invisible on a dark
+           page. Safari hands out nothing at all, so the stop has to be declared
+           either way, and then named and given a real ring (SC 2.1.1, 4.1.2,
+           2.4.7). aria-labelledby reuses the heading, so the region and the
+           table it holds answer to the same name. */
+        <div
+          className={`fx-scroll ${styles.tableWrapper}`}
+          role="region"
+          aria-labelledby={id}
+          tabIndex={0}
+        >
           <table className={styles.table} aria-labelledby={id}>
             <thead>
               <tr>

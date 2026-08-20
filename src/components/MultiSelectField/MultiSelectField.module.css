@@ -1,0 +1,98 @@
+/* The two react-select controls this component replaces with real <button>s.
+   They are styled here rather than through the `styles` config in
+   useReactSelectStyles because that config emits an emotion `css` prop, which
+   only react-select's own JSX pragma can interpret — the overrides drop it. */
+
+/* Shared box. min-width/min-height rather than width/height so a longer label
+   can never squeeze it back under the floor.
+
+   24px is SC 2.5.8's minimum, and border-box means a border would be counted
+   INTO that 24 rather than added to it — so this deliberately has none, and the
+   whole 24 is target. react-select's own remove control was a 14px glyph with
+   4px of padding either side: 22×22, under the floor in both dimensions. */
+.chipRemove,
+.clearAll {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  transition: background var(--dur) ease, color var(--dur) ease;
+}
+
+/* Square on the leading edge so it butts against the chip's label, rounded on
+   the trailing edge to follow the chip's own corner. */
+.chipRemove {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.chipRemove:hover {
+  background: color-mix(in srgb, var(--accent-pink) 38%, var(--bg-panel));
+}
+
+.clearAll {
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.clearAll:hover {
+  color: var(--accent-blue);
+}
+
+/* Inset, not offset. An outward ring on a chip sitting flush against the
+   control's inner edge is the classic case for an ancestor clipping it — and
+   the chip's own label is overflow:hidden for its ellipsis. Drawing the ring
+   inside the button's own box means nothing can crop it. */
+.chipRemove:focus-visible,
+.clearAll:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* Windows High Contrast drops color-mix, gradients and every box-shadow, so
+   the hover tint above simply vanishes and both buttons become invisible boxes
+   on the forced background. Redraw them in system colors: a real border gives
+   the target an edge, and Highlight carries hover and focus. */
+@media (forced-colors: active) {
+  .chipRemove,
+  .clearAll {
+    /* border-box counts these 1px borders into the 24, which the min sizes
+       above already have room for at the glyph's 14–16px. */
+    border: 1px solid ButtonBorder;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .chipRemove:hover,
+  .clearAll:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .chipRemove:focus-visible,
+  .clearAll:focus-visible {
+    outline-color: CanvasText;
+  }
+}
+
+/* The required asterisk. No color of its own: it inherits .field-label's, which
+   is the theme service's validated --accent-green (or --accent-purple on a
+   sublabel), so it clears AA in all 17 palettes without a measurement of its
+   own. A hand-picked accent here would need re-checking against every theme in
+   both modes, for a character that carries no meaning a screen reader uses —
+   aria-required on the combobox does that job.
+
+   Sized up slightly and given its own space so it reads as a mark rather than
+   punctuation that ran into the label. */
+.required {
+  margin-inline-start: 0.3em;
+  font-size: 1.15em;
+  line-height: 1;
+}

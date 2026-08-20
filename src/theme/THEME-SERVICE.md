@@ -37,7 +37,23 @@ Rules: keep WCAG AA 2.2 · default theme is Rink Classic · the selector uses th
 ### Vendored files
 `theme.css`, `effects.css`, `components.css`, `themes.index.json` in this folder;
 `theme-init.js` in `public/` (Vite serves it at the deploy base path).
-Imported in load order from `src/main.tsx`: theme → effects → components → `src/index.css`.
+Imported in load order from `src/main.tsx`: theme → effects → components → dropdown →
+site-header → site-footer → `components.local.css` → `src/index.css`.
+
+### Local overrides
+Generated files are never hand-edited, so deviations live in a sibling `*.local.css` loaded
+straight after the file it overrides. Two exist:
+- **`theme.local.css`** — the Acid Arcade default, above.
+- **`components.local.css`** — added `2026-08-20`. `components.css` ships **no**
+  `@media (forced-colors: active)` block at all, and every state cue it draws is built from
+  `color-mix()`, `opacity` or a glow `box-shadow` — the three things Windows High Contrast
+  removes outright. Most controls still degrade acceptably, because the platform forces their
+  borders and backgrounds anyway. This file covers the ones that do not: the `.switch`, whose
+  on state is `background: var(--accent-green)` and flattens to look identical to its off
+  state (SC 1.4.1); `.notice`, which loses its box entirely; and the universal focus ring,
+  whose `box-shadow` half is dropped. **This belongs upstream** — it is a gap in the service,
+  not an app preference, and the file should shrink to nothing when the service grows its own
+  forced-colors support.
 
 ### Deliberate omissions
 - **`theme-select.js`** — `src/contexts/ThemeContext.tsx` is the React equivalent. It uses the same
@@ -68,3 +84,7 @@ Imported in load order from `src/main.tsx`: theme → effects → components →
 - `2026-08-19` — No theme changes. Recorded here because the theme picker moved: `dropdown.css` /
   `dropdown.js` are now vendored (reversing this file's original omission) and the header adopted
   the shared site rail. Details in `A11Y-WAY-PAGES.md`.
+- `2026-08-20` — No theme changes. Recorded because `components.local.css` was added, for the
+  forced-colors gap described under **Local overrides**. Found by the accessibility sweep
+  (`npm run test:a11y`), which asserts that emulating `forced-colors: active` actually repaints
+  the component surfaces rather than merely that a media block exists somewhere.

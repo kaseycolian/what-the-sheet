@@ -82,3 +82,49 @@ body {
   overflow: hidden;
   scrollbar-gutter: stable;
 }
+
+/* Text for screen readers only. Copied verbatim from the a11y-library's
+   visually-hidden component — all nine declarations are load-bearing:
+
+     position: absolute    out of flow, so it cannot push layout
+     width/height: 1px     not 0 — a zero-size box can drop out of the tree
+     margin: -1px          pulls the 1px box out of the parent's own box
+     overflow: hidden      clips the content to that 1px
+     clip-path: inset(50%) the actual removal
+     white-space: nowrap   without it the text wraps inside 1px and some
+                           screen readers read it one letter per line
+     padding/border: 0     border-box cannot shrink a box below its own
+                           borders, so a border makes it bigger than 1px
+
+   No color and no font: this is never seen, and inheriting the context is
+   correct. The vendored site-header/site-footer files inline the same recipe
+   for their own clipped captions; this is the app's copy. */
+.visually-hidden {
+  position: absolute;
+  box-sizing: border-box;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* SC 2.4.11 Focus Not Obscured. The rail is position: sticky, and the browser's
+   own scroll-into-view aligns a focused element's TOP edge with the top of the
+   scrollport — which is underneath the rail. It only bites moving backwards
+   through the page, because scrolling forwards aligns the bottom edge instead,
+   which is why it survives a forward-only tab through.
+
+   ResultTable's heading already carried this for the same reason; it belongs on
+   everything a keyboard can land on. --wts-rail-h tracks the rail's three
+   heights (see above), and the extra 12px keeps the ring clear of the edge
+   rather than flush against it.
+
+   :where() so this contributes zero specificity — any element that wants its
+   own scroll-margin still wins with a single class. */
+:where(a[href], button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-top: calc(var(--wts-rail-h) + 12px);
+}

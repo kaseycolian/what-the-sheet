@@ -1,0 +1,84 @@
+/* Rules that have to reach react-select's own global class names — the ones
+   classNamePrefix="rs" generates — so this is a plain stylesheet rather than a
+   CSS module.
+
+   Why !important, which is otherwise never used in this app: react-select
+   styles itself through emotion, which injects single-class rules
+   (.css-1a2b3c) into <head> at runtime. Every selector below is also a single
+   class, so the two tie on specificity and the winner is decided by injection
+   order — a render-time detail no stylesheet can rely on. !important is what
+   makes these rules deterministic.
+   ------------------------------------------------------------------------ */
+
+/* SC 2.5.8. react-select sizes the combobox's text input to its content, which
+   is 4px wide while it is empty — under the 24px floor in one dimension, and
+   reported by axe as target-size. Neither the label (full width, 13px tall) nor
+   the input clears the floor in BOTH dimensions, so the fix has to be on the
+   input. The container it sits in is hundreds of pixels wide, so a minimum
+   costs nothing visually. */
+.rs__input {
+  min-width: 24px !important;
+}
+
+/* What forced colors takes away, per the a11y-library's pitfalls: every
+   color-mix() tint, every gradient background-image, and every box-shadow. In
+   this component that is the whole state system — the control's focus ring, the
+   menu's hover and selected rows, and the chips' fill are all built from one of
+   those three. Without this block a chip is an invisible box and a focused
+   option looks exactly like an unfocused one. */
+
+@media (forced-colors: active) {
+  /* The focus ring is a box-shadow in the styles config, so it is gone. An
+     outline is drawn by the platform and survives. The ring goes on the
+     control because that is the box the user sees; real focus is on the input
+     inside it, hence :focus-within. */
+  .rs__control:focus-within {
+    outline: 2px solid CanvasText !important;
+    outline-offset: 2px !important;
+  }
+
+  /* A chip's only shape was its pink tint. Give it a real border, or the
+     remove button appears to float in the control with nothing around it. */
+  .rs__multi-value {
+    border: 1px solid CanvasText !important;
+    background: Canvas !important;
+  }
+
+  .rs__multi-value__label {
+    color: CanvasText !important;
+  }
+
+  .rs__menu {
+    border: 1px solid CanvasText !important;
+    background: Canvas !important;
+  }
+
+  /* Both row states were tints of --accent-pink, which collapse to the same
+     forced background. The keyboard-focused row takes Highlight; the selected
+     row keeps the font-weight the styles config already gives it (weight is not
+     forced) and adds a border, so the two remain distinguishable from each
+     other as well as from a plain row. */
+  .rs__option {
+    background: Canvas !important;
+    color: CanvasText !important;
+  }
+
+  .rs__option--is-selected {
+    border-inline-start: 3px solid CanvasText !important;
+  }
+
+  .rs__option--is-focused {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+
+  .rs__option--is-focused.rs__option--is-selected {
+    border-inline-start-color: HighlightText !important;
+  }
+
+  .rs__placeholder,
+  .rs__input,
+  .rs__no-options-message {
+    color: CanvasText !important;
+  }
+}
