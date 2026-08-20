@@ -72,3 +72,13 @@ body {
 @media (max-width: 620px) {
   :root { --wts-rail-h: calc(2 * clamp(10px, 1.4vw, 22px) + 120px); }
 }
+
+/* Set by ConfirmDialog while a modal is open. showModal() makes the rest of the
+   page inert but leaves it scrolling, so the lock is ours to apply.
+   scrollbar-gutter reserves the space the scrollbar occupied — without it the
+   whole page jumps sideways as the bar disappears, behind a dialog that is
+   supposed to be the only thing moving. */
+:root[data-modal-lock] {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}

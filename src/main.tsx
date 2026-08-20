@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './theme/theme.css';
+import './theme/theme.local.css';
 import './theme/effects.css';
 import './theme/components.css';
 import './theme/dropdown.css';

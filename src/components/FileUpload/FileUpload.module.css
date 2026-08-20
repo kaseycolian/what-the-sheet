@@ -31,10 +31,9 @@
   margin: 0;
 }
 
-/* Clipped, not display:none or visibility:hidden: either of those would take the
-   input out of the tab order, and it is still the real control — the label in
-   front of it only forwards clicks. Everything visible about the button is drawn
-   on that label. */
+/* Clipped rather than display:none. The input is no longer a tab stop — the
+   button beside it is the control — but display:none on a file input has been
+   flaky for programmatic .click() in the past, and clipping costs nothing. */
 .input {
   position: absolute;
   width: 1px;
@@ -46,19 +45,11 @@
   border: 0;
 }
 
+/* A real <button> now, so .btn supplies the box, the cursor and the focus ring —
+   the sibling rule that used to draw a ring on the stand-in <label> is gone with
+   it. Only the spacing is local. */
 .choose {
-  display: inline-block;
   margin-top: 0.75rem;
-  cursor: pointer;
-  /* A <label> is not a button, so it gets no automatic focus ring — and the
-     input that would have drawn one is clipped. The sibling rule below puts it
-     back; without it the control is keyboard-reachable but invisible when
-     focused, which fails SC 2.4.7. */
-}
-
-.input:focus-visible + .choose {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
 }
 
 .error {

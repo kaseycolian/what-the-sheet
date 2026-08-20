@@ -1,0 +1,79 @@
+/* =============================================================================
+   what-the-sheet — local override of the vendored theme.css default.
+
+   theme.css is GENERATED (tools/build-final.mjs) and is never hand-edited, so the
+   app's choice of default theme lives here instead. Load it immediately AFTER
+   theme.css.
+
+   The service ships Rink Classic as the default, baked into theme.css's bare
+   :root. This repo defaults to Acid Arcade instead. Every one of the 16 themes is
+   untouched and still selectable; only the unstamped state changes.
+
+   WHY :root:not([data-theme]) AND NOT :root
+   -----------------------------------------
+   `[data-theme="acid-arcade-dark"]` is an attribute selector — specificity
+   (0,1,0). A bare `:root` is a pseudo-class — also (0,1,0). This file loads after
+   theme.css, so a bare `:root` block here would TIE with every explicit theme
+   selector and win on source order, repainting all 16 themes as Acid Arcade.
+
+   `:root:not([data-theme])` avoids that by not matching at all once a theme is
+   stamped: :not() takes its argument's specificity, so the selector is (0,2,0)
+   and beats theme.css's own :root when nothing is stamped, while staying inert
+   the moment the picker sets an attribute.
+
+   Tokens are copied verbatim from the [data-theme="acid-arcade-*"] blocks in
+   theme.css. Both palettes are the service's own, already AA-validated; nothing
+   here invents a color. If theme.css is regenerated, re-copy them.
+
+   --fx-grid-opacity is deliberately absent: the acid-arcade blocks do not set it
+   either, so it keeps falling through to the 0.4 on theme.css's :root, exactly as
+   it does when the theme is picked explicitly.
+   ============================================================================= */
+
+/* Acid Arcade Dark — the default when nothing is stamped. */
+:root:not([data-theme]) {
+  color-scheme: dark;
+  --glow-strength: 1;
+  --bg: #0d0f12;
+  --bg-panel: #171b20;
+  --bg-elevated: #222831;
+  --text: #f2fff4;
+  --text-muted: #a8c0a8;
+  --border: #2c3830;
+  --border-strong: #5f7d62;
+  --focus-ring: #c6ff2e;
+  --accent-pink: #ff4de0;
+  --on-pink: #22001d;
+  --accent-green: #c6ff2e;
+  --on-green: #1a2400;
+  --accent-blue: #38f0ff;
+  --on-blue: #00222a;
+  --accent-purple: #b98cff;
+  --on-purple: #1a0a3a;
+}
+
+/* Acid Arcade Light — same trade the service makes for its own default: the
+   unstamped state follows the OS. This block matches theme.css's light-default
+   rule exactly in specificity, so it wins purely by loading later. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --glow-strength: 0.35;
+    --bg: #f4f7ee;
+    --bg-panel: #ffffff;
+    --bg-elevated: #ffffff;
+    --text: #111a10;
+    --text-muted: #556b52;
+    --border: #dde8d3;
+    --border-strong: #6f9066;
+    --focus-ring: #5a7a00;
+    --accent-pink: #c01e9c;
+    --on-pink: #ffffff;
+    --accent-green: #5a7a00;
+    --on-green: #ffffff;
+    --accent-blue: #0a7099;
+    --on-blue: #ffffff;
+    --accent-purple: #7028d0;
+    --on-purple: #ffffff;
+  }
+}

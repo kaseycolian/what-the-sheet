@@ -19,6 +19,18 @@ Rules: keep WCAG AA 2.2 · default theme is Rink Classic · the selector uses th
 - Background effect: `page background` — `.fx-grid` on: `<body>` (`index.html`)
 - Selector: `theme-service selector` — placement: app header, right of the title block
   (`src/components/ThemeSelector/ThemeSelector.tsx`), plus a "Reduce motion" `.switch`
+- Default theme: **Acid Arcade, not the service's Rink Classic** — a deliberate deviation from the
+  rule above. `theme.css` is generated and not hand-edited, so the override lives in
+  `src/theme/theme.local.css`, loaded straight after it. Three things to know:
+  - It is scoped `:root:not([data-theme])`, never a bare `:root`. A bare `:root` is (0,1,0), the
+    same as every `[data-theme="…"]` block, and would win on source order — repainting all 16
+    themes as Acid Arcade. Scoped, it simply stops matching once a theme is stamped.
+  - The tokens are copied verbatim from the service's own `acid-arcade-dark` / `acid-arcade-light`
+    blocks, so nothing here invents a color or needs re-validating. Re-copy them if `theme.css`
+    is regenerated.
+  - `themes.index.json` still names Rink Classic as `default`; it is generated too. The one place
+    that read it — the Auto option's swatch — now asks for `acid-arcade-dark` by id in
+    `ThemeSelector.tsx`, and the option reads "Auto (Acid Arcade)".
 - Existing themes: `removed` — the app's own `neon` / `classic` token blocks and the `wts-theme`
   localStorage key are gone (the provider clears the stale key on mount)
 

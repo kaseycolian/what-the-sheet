@@ -102,8 +102,13 @@ export function ThemeSelector() {
           value={themeId}
           onChange={(e) => setThemeId(e.target.value)}
         >
-          <option value="" data-dropdown-swatch={themeSwatch('')}>
-            Auto (Rink Classic)
+          {/* The swatch is asked for by id rather than with themeSwatch(''), which
+              resolves through themes.index.json's `default` — still Rink Classic,
+              since that file is generated and not hand-edited. src/theme/theme.local.css
+              is what actually decides the unstamped default, so the two are named
+              together here to keep the dot honest. */}
+          <option value="" data-dropdown-swatch={themeSwatch('acid-arcade-dark')}>
+            Auto (Acid Arcade)
           </option>
           {families.map(([name, entries]) => (
             <optgroup key={name} label={name}>
